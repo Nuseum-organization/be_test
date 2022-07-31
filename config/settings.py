@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os, json
-from turtle import Turtle
 from django.core.exceptions import ImproperlyConfigured
 from decouple import config
 
