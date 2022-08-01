@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 class CustomRegisterSerializer(RegisterSerializer):
 
   def validate_username(self, username):
-        codes = ['AA111111', 'AA111112', 'AA111113', 'AB111111' , 'AB111112', 'AB111113' , 'AC111111', 'AC111112', 'AC111113', 'ZZ999999'] # 30명 코드
+        codes = ['사과', '오이', '호박', '당근' , '시금치', '열무' , '토란', '감자', '브로콜리', '양배추'] # 30명 코드
         username = get_adapter().clean_username(username)
         if username not in codes:
           raise serializers.ValidationError(_("올바른 코드를 입력하세요!"))
