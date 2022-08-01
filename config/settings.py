@@ -128,7 +128,8 @@ MIDDLEWARE = [
 ]
 
 # cors
-CORS_ORIGIN_WHITELIST = ['https://nuseum-949i9v22k-parkjju.vercel.app',
+CORS_ORIGIN_WHITELIST = ['https://nuseum-rho.vercel.app',
+                        'https://nuseum-949i9v22k-parkjju.vercel.app',
                         'http://127.0.0.1:3000'
                          ,'http://localhost:3000']
 CORS_ALLOW_CREDENTIALS = True
