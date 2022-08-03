@@ -30,12 +30,12 @@ class CustomDetailSerializer(UserDetailsSerializer):
             extra_fields.append('first_name')
         if hasattr(UserModel, 'last_name'):
             extra_fields.append('last_name')
-        if hasattr(UserModel, 'd_nutrient'):
-            extra_fields.append('d_nutrient')
-        if hasattr(UserModel, 'm_nutrient'):
-            extra_fields.append('m_nutrient')
-        if hasattr(UserModel, 'y_nutrient'):
-            extra_fields.append('y_nutrient')
+        # if hasattr(UserModel, 'd_nutrient'):
+        #     extra_fields.append('d_nutrient')
+        # if hasattr(UserModel, 'm_nutrient'):
+        #     extra_fields.append('m_nutrient')
+        # if hasattr(UserModel, 'y_nutrient'):
+        #     extra_fields.append('y_nutrient')
         model = UserModel
         fields = ('pk', *extra_fields)
         read_only_fields = ('email',)

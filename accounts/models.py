@@ -7,9 +7,6 @@ from .managers import UserManager
 class User(AbstractUser):
   username = models.CharField(_('username'), max_length=15, unique=True ,blank=True)
   # email = models.EmailField(_('email adrress'), unique=True)
-  d_nutrient = models.IntegerField(default=0)
-  m_nutrient = models.IntegerField(default=0)
-  y_nutrient = models.IntegerField(default=0)
 
   # USERNAME_FIELD = 'email'
   REQUIRED_FIELDS = []
