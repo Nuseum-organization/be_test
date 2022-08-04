@@ -9,8 +9,8 @@ from .serializers import NutrientSerializer
 class NutrientView(APIView):
   def get(self, request):
     try:
-      room = Nutrient.objects.filter(username=request.user)
-      serializer = NutrientSerializer(room, many=True).data
+      nutrient = Nutrient.objects.filter(username=request.user)
+      serializer = NutrientSerializer(nutrient, many=True).data
       return Response(serializer)
     except Nutrient.DoesNotExist:
       return Response(status=status.HTTP_404_NOT_FOUND)
