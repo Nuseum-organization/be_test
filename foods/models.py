@@ -12,13 +12,12 @@ class Category(models.Model):
 
 class Food(models.Model):
   name = models.CharField(max_length=200)
-  category = models.ManyToManyField(Category, blank=True)
-
+  # category = models.ManyToManyField(Category, blank=True)
+  category = models.CharField(max_length=50)
   energy = models.FloatField(default=0.0)
   protein = models.FloatField(default=0.0)
   fat = models.FloatField(default=0.0)
   carbohydrate = models.FloatField(default=0.0)
-  
   dietary_fiber = models.FloatField(default=0.0)
   magnesium = models.FloatField(default=0.0)
   vitamin_a = models.FloatField(default=0.0)
@@ -29,11 +28,11 @@ class Food(models.Model):
   tryptophan = models.FloatField(default=0.0)
   dha_epa = models.FloatField(default=0.0)
 
-  amount = models.IntegerField(default=0) # 얘를 input으로 받아야함!(PostSerializer에서 input으로 받도록 설계)
-  is_beverage = models.BooleanField(default=False)
+  # amount = models.IntegerField(default=0)
+  # is_beverage = models.BooleanField(default=False)
   
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
+  # created_at = models.DateTimeField(auto_now_add=True)
+  # updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
     return f'[{self.pk}]{self.name} :: {self.category.all()} '
