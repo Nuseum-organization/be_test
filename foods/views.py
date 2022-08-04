@@ -13,7 +13,7 @@ class FoodViewSet(ModelViewSet):
 class FoodsView(APIView):
   def get(self, request):
     paginator =PageNumberPagination()
-    # paginator.page_size = 20
+    paginator.page_size = 500
     search_query = request.GET.get("search", None)
     print(search_query)
     if search_query != None:
