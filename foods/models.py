@@ -11,7 +11,7 @@ class Category(models.Model):
     verbose_name_plural = 'categories'
 
 class Food(models.Model):
-  name = models.CharField(max_length=80)
+  name = models.CharField(max_length=200)
   category = models.ManyToManyField(Category, blank=True)
 
   energy = models.FloatField(default=0.0)
