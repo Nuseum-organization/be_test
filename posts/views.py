@@ -21,8 +21,10 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
 
   def post(self, request):
     b_amount, l_amount, d_amount, s_amount = [], [] ,[] ,[]
-    print(request.data)
-    for i in range(len(request.data['breakfast'])):
+    # print(request.data)
+    
+    breakfast_length = len(request.data['breakfast'])
+    for i in range(breakfast_length):
       b_amount.append(request.data['breakfast'][i][1])
       request.data['breakfast'][i] = request.data['breakfast'][i][0]
 
@@ -38,10 +40,10 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       s_amount.append(request.data['snack'][i][1])
       request.data['snack'][i] = request.data['snack'][i][0]
     
-    print(b_amount)
-    print(l_amount)
-    print(d_amount)
-    print(s_amount)
+    # print(b_amount)
+    # print(l_amount)
+    # print(d_amount)
+    # print(s_amount)
 
     serializer = PostSerializer(data=request.data)
     # print(request.data['breakfast'])

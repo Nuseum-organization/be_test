@@ -5,6 +5,8 @@ from foods.models import Food
 class Post(models.Model):
   title = models.CharField(max_length=30)
   author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+  
+  # consumption으로 빼기
   breakfast = models.ManyToManyField(Food, blank=True, related_name='breakfast_food')
   lunch = models.ManyToManyField(Food, blank=True, related_name='lunch_food')
   dinner = models.ManyToManyField(Food, blank=True, related_name='dinner_food')
@@ -13,7 +15,11 @@ class Post(models.Model):
   l_amount = models.CharField(max_length=100, blank=True, null=True)
   d_amount = models.CharField(max_length=100, blank=True, null=True)
   s_amount = models.CharField(max_length=100, blank=True, null=True)
+  
   remark = models.TextField()
+  # contnet = models.Textfield() 
+
+  # image 따로 빼서 관리
   pic1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
   pic2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
   pic3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)

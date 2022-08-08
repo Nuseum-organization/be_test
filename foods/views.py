@@ -11,13 +11,14 @@ class FoodViewSet(ModelViewSet):
   serializer_class = FoodSerializer
 
 class FoodsView(APIView):
+
   def get(self, request):
     paginator =PageNumberPagination()
     paginator.page_size = 10000
     search_query = request.GET.get("search", None)
     print(search_query)
     if search_query != None:
-      foods = Food.objects.filter(Q(name__icontains=search_query))
+      foods = Food.objects.filter(Q(name__icontains=search_query)).order_by('classifier')
     else:
       foods = Food.objects.all()
     results = paginator.paginate_queryset(foods, request)

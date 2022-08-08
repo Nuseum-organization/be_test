@@ -2,7 +2,7 @@ from django.db import models
 
 class Category(models.Model):
   name = models.CharField(max_length=30)
-  slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+  # slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
 
   def __str__(self):
     return self.name
@@ -12,12 +12,14 @@ class Category(models.Model):
 
 class Food(models.Model):
   name = models.CharField(max_length=200)
-  # category = models.ManyToManyField(Category, blank=True)
-  category = models.CharField(max_length=50)
+  category = models.ManyToManyField(Category, blank=True)
+  # category = models.CharField(max_length=50) # "육류, 유제품" # (복수인 경우) -> parsing해서 리스트에 저장?
+
   energy = models.FloatField(default=0.0)
   protein = models.FloatField(default=0.0)
   fat = models.FloatField(default=0.0)
   carbohydrate = models.FloatField(default=0.0)
+  
   dietary_fiber = models.FloatField(default=0.0)
   magnesium = models.FloatField(default=0.0)
   vitamin_a = models.FloatField(default=0.0)
@@ -27,6 +29,8 @@ class Food(models.Model):
   vitamin_b12 = models.FloatField(default=0.0)
   tryptophan = models.FloatField(default=0.0)
   dha_epa = models.FloatField(default=0.0)
+
+  classifier = models.IntegerField(default=0)
 
   # amount = models.IntegerField(default=0)
   # is_beverage = models.BooleanField(default=False)
