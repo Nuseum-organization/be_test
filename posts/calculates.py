@@ -8,7 +8,7 @@ def calculate(meal, amount,  result, c_result):
     result[3] += meal[i].fat * amount[i] / 100
     result[4] += meal[i].dietary_fiber * amount[i] / 100
     result[5] += meal[i].magnesium * amount[i] / 100
-    result[6] += meal[i].vitamin_c * amount[i] / 100
+    result[6] += meal[i].vitamin_a * amount[i] / 100
     result[7] += meal[i].vitamin_d * amount[i] / 100
     result[8] += meal[i].vitamin_b6 * amount[i] / 100
     result[9] += meal[i].vitamin_b12 * amount[i] / 100

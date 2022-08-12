@@ -3,6 +3,9 @@ from .models import Nutrient
 
 class NutrientSerializer(serializers.ModelSerializer):
 
+  created_at = serializers.DateTimeField(format="%Y-%m-%d")
+  updated_at = serializers.DateTimeField(format="%Y-%m-%d")
+
   class Meta:
     model = Nutrient
     fields = '__all__'

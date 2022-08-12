@@ -47,6 +47,7 @@ class PostSerializer(serializers.ModelSerializer):
     result, c_result = calculate(snack, s_amount, result, c_result)
     # print(result, c_result)
  
+    # NutrientSerializer 사용하면 되지 않나? -> 테스트 필요!
     nutrient = Nutrient.objects.create( # 하루 영양정보 생성
       username=validated_data['author'], 
       energy = result[0],
@@ -55,7 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
       fat = result[3],
       dietary_fiber = result[4],
       magnesium = result[5],
-      vitamin_c = result[6],
+      vitamin_a = result[6],
       vitamin_d = result[7],
       vitamin_b6 = result[8],
       vitamin_b12 = result[9],
@@ -77,3 +78,19 @@ class PostSerializer(serializers.ModelSerializer):
     post.snack.set(snack)
     return post
 
+  # instance 필요 : DRF가 update인지 create인지 구분하기 위해
+  # def update(self, instance, validated_data):
+  #   # 우선 validated_data에서 가져오기
+  #   instance.name = validated_data.get("name", instance.name) # 값이 없는 경우 default 값(instance.field == 현재값)
+  #   instance.address = validated_data.get("address", instance.address)
+  #   instance.price = validated_data.get("price", instance.price)
+  #   instance.beds = validated_data.get("beds", instance.beds)
+  #   instance.lat = validated_data.get("lat", instance.lat)
+  #   instance.lng = validated_data.get("lng", instance.lng)
+  #   instance.bedrooms = validated_data.get("bedrooms", instance.bedrooms)
+  #   instance.bathrooms = validated_data.get("bathrooms", instance.bathrooms)
+  #   instance.check_in = validated_data.get("check_in", instance.check_in)
+  #   instance.check_out = validated_data.get("check_out", instance.check_out)
+  #   instance.instant_book = validated_data.get("instant_book", instance.instant_book)
+  #   instance.save()
+  #   return instance # 항상 instance를 return해야 함

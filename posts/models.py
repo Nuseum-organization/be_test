@@ -6,7 +6,7 @@ class Post(models.Model):
   title = models.CharField(max_length=30)
   author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
   
-  # consumption으로 빼기
+  # consumption
   breakfast = models.ManyToManyField(Food, blank=True, related_name='breakfast_food')
   lunch = models.ManyToManyField(Food, blank=True, related_name='lunch_food')
   dinner = models.ManyToManyField(Food, blank=True, related_name='dinner_food')
