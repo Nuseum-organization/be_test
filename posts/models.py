@@ -3,7 +3,7 @@ from accounts.models import User
 from foods.models import Food
 
 class Post(models.Model):
-  title = models.CharField(max_length=30)
+  # title = models.CharField(max_length=30) # title 삭제
   author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
   
   # consumption
@@ -11,13 +11,15 @@ class Post(models.Model):
   lunch = models.ManyToManyField(Food, blank=True, related_name='lunch_food')
   dinner = models.ManyToManyField(Food, blank=True, related_name='dinner_food')
   snack = models.ManyToManyField(Food, blank=True, related_name='snack_food')
-  b_amount = models.CharField(max_length=100, blank=True, null=True)
-  l_amount = models.CharField(max_length=100, blank=True, null=True)
-  d_amount = models.CharField(max_length=100, blank=True, null=True)
-  s_amount = models.CharField(max_length=100, blank=True, null=True)
+  supplement = models.ManyToManyField(Food, blank=True, related_name='supplement_food') # 영양제 정보 추가
+  breakfast_amount = models.CharField(max_length=100, blank=True, null=True)
+  lunch_amount = models.CharField(max_length=100, blank=True, null=True)
+  dinner_amount = models.CharField(max_length=100, blank=True, null=True)
+  snack_amount = models.CharField(max_length=100, blank=True, null=True)
+  supplement_amount=  models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
   
   remark = models.TextField()
-  # contnet = models.Textfield() 
+  # comment = models.Textfield() 
 
   # image 따로 빼서 관리
   pic1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
@@ -28,4 +30,5 @@ class Post(models.Model):
   updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
-    return f'[{self.pk}]{self.title} :: {self.author}'
+    return f'[{self.pk}] {self.author}\'s post :: {self.created_at}'
+    # return f'[{self.pk}]{self.title} :: {self.author}'

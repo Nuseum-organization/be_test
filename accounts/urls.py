@@ -12,5 +12,6 @@ from .views import *
 urlpatterns = [
   path('', include('dj_rest_auth.urls')), # rest_auth의 다양한 url 사용
   path('me/', CustomDetailView.as_view()),
+  # path('me/post/', MyPostView.as_view()), # 논의 필요
   path('registration/', include('dj_rest_auth.registration.urls')),
 ]

@@ -25,26 +25,31 @@ class PostSerializer(serializers.ModelSerializer):
 
   def create(self, validated_data): # post 생성 (이때 음식에 amount 추가 필요)
 
-    b_amount = list(map(float, validated_data['b_amount'][1:-1].split(',')))
-    l_amount = list(map(float, validated_data['l_amount'][1:-1].split(',')))
-    d_amount = list(map(float, validated_data['d_amount'][1:-1].split(',')))
-    s_amount = list(map(float, validated_data['s_amount'][1:-1].split(',')))
+    # 각 식단의 음식별 섭취량 추출
+    breakfast_amount = list(map(float, validated_data['breakfast_amount'][1:-1].split(',')))
+    lunch_amount = list(map(float, validated_data['lunch_amount'][1:-1].split(',')))
+    dinner_amount = list(map(float, validated_data['dinner_amount'][1:-1].split(',')))
+    snack_amount = list(map(float, validated_data['snack_amount'][1:-1].split(',')))
+    supplement_amount = list(map(float, validated_data['supplement_amount'][1:-1].split(',')))
 
     result = [0] * 13
     # c_result = set()
-    c_result = Category.objects.none() # 빈 쿼리셋 생성
+    category_result = Category.objects.none() # 빈 쿼리셋 생성
     breakfast = validated_data.pop('breakfast', [])
     # print(breakfast)
-    result, c_result = calculate(breakfast, b_amount, result, c_result)
+    result, category_result = calculate(breakfast, breakfast_amount, result, category_result)
 
     lunch = validated_data.pop('lunch', [])
-    result, c_result = calculate(lunch, l_amount, result, c_result)
+    result, category_result = calculate(lunch, lunch_amount, result, category_result)
 
     dinner = validated_data.pop('dinner', [])
-    result, c_result = calculate(dinner, d_amount, result, c_result)
+    result, category_result = calculate(dinner, dinner_amount, result, category_result)
 
     snack = validated_data.pop('snack', [])
-    result, c_result = calculate(snack, s_amount, result, c_result)
+    result, category_result = calculate(snack, snack_amount, result, category_result)
+
+    supplement = validated_data.pop('supplement', [])
+    result, category_result = calculate(supplement, supplement_amount, result, category_result)
     # print(result, c_result)
  
     # NutrientSerializer 사용하면 되지 않나? -> 테스트 필요!
@@ -67,7 +72,7 @@ class PostSerializer(serializers.ModelSerializer):
     )
     # 오늘 먹은 음식들의 카테고리 기록
     categories_id = []
-    for elem in c_result:
+    for elem in category_result:
       categories_id.append(elem[0])
     nutrient.category.set(categories_id)
 
@@ -76,6 +81,7 @@ class PostSerializer(serializers.ModelSerializer):
     post.lunch.set(lunch)
     post.dinner.set(dinner)
     post.snack.set(snack)
+    post.supplement.set(supplement)
     return post
 
   # instance 필요 : DRF가 update인지 create인지 구분하기 위해
