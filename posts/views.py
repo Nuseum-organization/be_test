@@ -36,7 +36,7 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     else:
       return Response(status=status.HTTP_404_NOT_FOUND)
 
-  # TODO : POST LIST 추가 필요 **
+  # TODO : POST LIST 추가 필요 ** -> mypage에서만 보여줄지 고민중임!
 
   # serializer에 update 메서드 추가 필요 -> (주의) put시 하루 영양성분을 다시 계산하는 로직도 구현 필요***
   def put(self, request, pk):
@@ -57,37 +57,53 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       return Response(status=status.HTTP_404_NOT_FOUND)
 
   def post(self, request):
-    b_amount, l_amount, d_amount, s_amount = [], [] ,[] ,[]
+    breakfast_amount, lunch_amount, dinner_amount, snack_amount, supplement_amount = [], [] ,[] ,[], []
     # print(request.data)
     
     breakfast_length = len(request.data['breakfast'])
     for i in range(breakfast_length):
-      b_amount.append(request.data['breakfast'][i][1])
+      breakfast_amount.append(request.data['breakfast'][i][1])
       request.data['breakfast'][i] = request.data['breakfast'][i][0]
 
-    for i in range(len(request.data['lunch'])):
-      l_amount.append(request.data['lunch'][i][1])
+    lunch_length = len(request.data['lunch'])
+    for i in range(lunch_length):
+      lunch_amount.append(request.data['lunch'][i][1])
       request.data['lunch'][i] = request.data['lunch'][i][0]
 
-    for i in range(len(request.data['dinner'])):
-      d_amount.append(request.data['dinner'][i][1])
+    dinner_length = len(request.data['dinner'])
+    for i in range(dinner_length):
+      dinner_amount.append(request.data['dinner'][i][1])
       request.data['dinner'][i] = request.data['dinner'][i][0]
 
-    for i in range(len(request.data['snack'])):
-      s_amount.append(request.data['snack'][i][1])
+    snack_length = len(request.data['snack'])
+    for i in range(snack_length):
+      snack_amount.append(request.data['snack'][i][1])
       request.data['snack'][i] = request.data['snack'][i][0]
+
+    supplement_length = len(request.data['supplement'])
+    for i in range(supplement_length):
+      supplement_amount.append(request.data['supplement'][i][1])
+      request.data['supplement'][i] = request.data['supplement'][i][0]
     
-    # print(b_amount)
-    # print(l_amount)
-    # print(d_amount)
-    # print(s_amount)
+    # print(breakfast_amount)
+    # print(lunch_amount)
+    # print(dinner_amount)
+    # print(snack_amount)
+    # print(supplement_amount)
 
     serializer = PostSerializer(data=request.data)
     # print(request.data['breakfast'])
     # print()
     # print(serializer)
     if serializer.is_valid():
-      post = serializer.save(author=request.user, b_amount=str(b_amount), l_amount=str(l_amount), d_amount=str(d_amount), s_amount=str(s_amount))
+      post = serializer.save(
+        author=request.user, 
+        breakfast_amount=str(breakfast_amount), 
+        lunch_amount=str(lunch_amount), 
+        dinner_amount=str(dinner_amount), 
+        snack_amount=str(snack_amount),
+        supplement_amount = str(supplement_amount)
+      )
       post_serializer = PostSerializer(post).data
       print(post_serializer)
       return Response(data=post_serializer, status=status.HTTP_200_OK)
