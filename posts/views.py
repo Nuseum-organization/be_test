@@ -28,13 +28,13 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       return None
 
   # post 하나만 가져오기 -> 굳이 이럴 필요 없이, 해당 유저가 쓴 글 전체를 가져오는 것이 더 효과적인가?
-  def get(self, request, pk):
-    post = self.get_post(self, pk)
-    if post is not None:
-      serializer = PostSerializer(post).data
-      return Response(serializer)
-    else:
-      return Response(status=status.HTTP_404_NOT_FOUND)
+  # def get(self, request, pk):
+  #   post = self.get_post(self, pk)
+  #   if post is not None:
+  #     serializer = PostSerializer(post).data
+  #     return Response(serializer)
+  #   else:
+  #     return Response(status=status.HTTP_404_NOT_FOUND)
 
   # TODO : POST LIST 추가 필요 ** -> mypage에서만 보여줄지 고민중임!
 

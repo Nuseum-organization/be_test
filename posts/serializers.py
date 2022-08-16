@@ -26,11 +26,30 @@ class PostSerializer(serializers.ModelSerializer):
   def create(self, validated_data): # post 생성 (이때 음식에 amount 추가 필요)
 
     # 각 식단의 음식별 섭취량 추출
-    breakfast_amount = list(map(float, validated_data['breakfast_amount'][1:-1].split(',')))
-    lunch_amount = list(map(float, validated_data['lunch_amount'][1:-1].split(',')))
-    dinner_amount = list(map(float, validated_data['dinner_amount'][1:-1].split(',')))
-    snack_amount = list(map(float, validated_data['snack_amount'][1:-1].split(',')))
-    supplement_amount = list(map(float, validated_data['supplement_amount'][1:-1].split(',')))
+    if validated_data['breakfast_amount'] == '[]':
+      breakfast_amount = [0.0]
+    else:
+      breakfast_amount = list(map(float, validated_data['breakfast_amount'][1:-1].split(',')))
+
+    if validated_data['lunch_amount'] == '[]':
+      lunch_amount = [0.0]
+    else:
+      lunch_amount = list(map(float, validated_data['lunch_amount'][1:-1].split(',')))
+
+    if validated_data['dinner_amount'] == '[]':
+      dinner_amount = [0.0]
+    else:
+      dinner_amount = list(map(float, validated_data['dinner_amount'][1:-1].split(',')))
+
+    if validated_data['snack_amount'] == '[]':
+      snack_amount = [0.0]
+    else:
+      snack_amount = list(map(float, validated_data['snack_amount'][1:-1].split(',')))
+
+    if validated_data['supplement_amount'] == '[]':
+      supplement_amount = [0.0]
+    else:
+      supplement_amount = list(map(float, validated_data['supplement_amount'][1:-1].split(',')))
 
     result = [0] * 13
     # c_result = set()
