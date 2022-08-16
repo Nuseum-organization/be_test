@@ -18,7 +18,7 @@ class Post(models.Model):
   snack_amount = models.CharField(max_length=100, blank=True, null=True)
   supplement_amount=  models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
   
-  remark = models.TextField()
+  # remark = models.TextField()
   # comment = models.Textfield() 
 
   # image 따로 빼서 관리
