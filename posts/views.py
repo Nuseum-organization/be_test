@@ -32,6 +32,13 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     except Post.DoesNotExist:
       return None
 
+  def get_post_by_id(self, pk):
+    try:
+      post = Post.objects.get(pk=pk)
+      return post
+    except Post.DoesNotExist:
+      return None
+
   # post 테스트 시 주석처리 필요
   def get(self, request):
     date = self.request.GET.get('date', None)
@@ -50,16 +57,19 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
   # TODO : POST LIST 추가 필요 ** -> mypage에서만 보여줄지 고민중임!
 
   # serializer에 update 메서드 추가 필요 -> (주의) put시 하루 영양성분을 다시 계산하는 로직도 구현 필요***
-  def put(self, request, pk):
-    post = self.get_post(pk)
+  def put(self, request, pk): # pk는 post.id (GET으로 프론트에서 post.id를 우선 받고, PUT메서드를 보낼 때 URL에 pk를 보내주어야 함!)
+    post = self.get_post_by_id(pk)
+    print(post)
+    print(post.lunch)
+    print(post.dinner)
     if post is not None:
       if post.author != request.user:
         return Response(status=status.HTTP_403_FORBIDDEN)
       
       serializer = PostSerializer(post, data=request.data, partial=True)
-      print(serializer.is_valid(), serializer.errors)
+      print(serializer.is_valid(), serializer.errors) # True {}
       if serializer.is_valid():
-        post = serializer.save()
+        post = serializer.save() # serializer의 update 메서드 호출
         return Response(PostSerializer(post).data)
       else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQEUST)

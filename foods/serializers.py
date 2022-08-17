@@ -6,3 +6,9 @@ class FoodSerializer(serializers.ModelSerializer):
   class Meta:
     model = Food
     fields = '__all__'
+
+class FoodNameSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Food
+    fields = ['name']

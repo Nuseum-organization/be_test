@@ -4,4 +4,5 @@ from .views import *
 
 urlpatterns = [
   path('', FoodsView.as_view()),
+  path('name/', FoodNameView.as_view()),
 ]

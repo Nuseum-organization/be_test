@@ -105,19 +105,30 @@ class PostSerializer(serializers.ModelSerializer):
     post.created_at = validated_data['created_at']
     return post
 
-  # instance 필요 : DRF가 update인지 create인지 구분하기 위해
   # def update(self, instance, validated_data):
-  #   # 우선 validated_data에서 가져오기
-  #   instance.name = validated_data.get("name", instance.name) # 값이 없는 경우 default 값(instance.field == 현재값)
-  #   instance.address = validated_data.get("address", instance.address)
-  #   instance.price = validated_data.get("price", instance.price)
-  #   instance.beds = validated_data.get("beds", instance.beds)
-  #   instance.lat = validated_data.get("lat", instance.lat)
-  #   instance.lng = validated_data.get("lng", instance.lng)
-  #   instance.bedrooms = validated_data.get("bedrooms", instance.bedrooms)
-  #   instance.bathrooms = validated_data.get("bathrooms", instance.bathrooms)
-  #   instance.check_in = validated_data.get("check_in", instance.check_in)
-  #   instance.check_out = validated_data.get("check_out", instance.check_out)
-  #   instance.instant_book = validated_data.get("instant_book", instance.instant_book)
-  #   instance.save()
-  #   return instance # 항상 instance를 return해야 함
+  #   # 우선 validated_data에서 가져오기 (-> 지금은 입력받지 않으면 기존 값이 입력되도록 한 것인가? : 체크 필요!)
+  #   # instance.breakfast = validated_data.get("breakfast", instance.breakfast) # 값이 없는 경우 default 값(instance.field == 현재값)
+  #   # instance.lunch = validated_data.get("lunch", instance.lunch)
+  #   # instance.dinner = validated_data.get("dinner", instance.dinner)
+  #   # instance.snack = validated_data.get("snack", instance.snack)
+  #   # instance.supplement = validated_data.get("supplement", instance.supplement)
+    
+  #   # print(validated_data)
+  #   # print(validated_data.get("breakfast", instance.breakfast))
+  #   # print(instance.breakfast)
+  #   instance.breakfast.set(validated_data.get("breakfast", instance.breakfast)) # 값이 없는 경우 default 값(instance.field == 현재값)
+  #   instance.lunch.set(validated_data.get("lunch", instance.lunch))
+  #   instance.dinner.set(validated_data.get("dinner", instance.dinner))
+  #   instance.snack.set(validated_data.get("snack", instance.snack))
+  #   instance.supplement.set(validated_data.get("supplement", instance.supplement))
+  #   instance.breakfast_amount = validated_data.get("breakfast_amount", instance.breakfast_amount)
+  #   instance.lunch_amount = validated_data.get("lunch_amount", instance.lunch_amount)
+  #   instance.dinner_amount = validated_data.get("dinner_amount", instance.dinner_amount)
+  #   instance.snack_amount = validated_data.get("snack_amount", instance.snack_amount)
+  #   instance.supplement_amount = validated_data.get("supplement_amount", instance.supplement_amount)
+  #   instance.pic1 = validated_data.get("pic1", instance.pic1)
+  #   instance.pic2 = validated_data.get("pic2", instance.pic2)
+  #   instance.pic3 = validated_data.get("pic3", instance.pic3)
+
+    instance.save()
+    return instance # 항상 instance를 return해야 함

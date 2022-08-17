@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from .models import Food
-from .serializers import FoodSerializer
+from .serializers import FoodSerializer, FoodNameSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from django.db.models import Q
 
 class FoodViewSet(ModelViewSet):
@@ -24,3 +26,17 @@ class FoodsView(APIView):
     results = paginator.paginate_queryset(foods, request)
     serializer = FoodSerializer(results, many=True)
     return paginator.get_paginated_response(data=serializer.data)
+
+
+class FoodNameView(APIView):
+  def get(self, request):
+    id = request.GET.get('id', None)
+    if id != None:
+      try:
+        food = Food.objects.get(pk=id)
+      except Food.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    else:
+      return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = FoodNameSerializer(food).data
+    return Response(serializer)
