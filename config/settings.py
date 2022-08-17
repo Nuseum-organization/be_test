@@ -203,6 +203,9 @@ USE_I18N = True
 
 USE_TZ = False # 서울 기준 시각
 
+USE_L10N = False
+DATETIME_FORMAT = '%Y-%m-%d' # admin 페이지 상에서만 보이는 형식인듯?
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 

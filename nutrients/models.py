@@ -21,7 +21,8 @@ class Nutrient(models.Model):
   tryptophan = models.FloatField(default=0.0)
   dha_epa = models.FloatField(default=0.0)
 
-  created_at = models.DateTimeField(auto_now_add=True)
+  # created_at = models.DateTimeField()
+  created_at = models.CharField(max_length=10) # string 필드로 변경
   updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
