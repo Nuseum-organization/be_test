@@ -87,7 +87,8 @@ class PostSerializer(serializers.ModelSerializer):
       folic_acid = result[10],
       tryptophan = result[11],
       dha_epa = result[12],
-      created_at = date.today()
+      # created_at = date.today()
+      created_at = validated_data['created_at'] # 임시 설정
     )
     # 오늘 먹은 음식들의 카테고리 기록
     categories_id = []
@@ -101,6 +102,7 @@ class PostSerializer(serializers.ModelSerializer):
     post.dinner.set(dinner)
     post.snack.set(snack)
     post.supplement.set(supplement)
+    post.created_at = validated_data['created_at']
     return post
 
   # instance 필요 : DRF가 update인지 create인지 구분하기 위해

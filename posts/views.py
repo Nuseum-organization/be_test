@@ -7,7 +7,8 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework import status
 from nutrients.serializers import NutrientSerializer
-import json
+import json, time
+from datetime import datetime
 
 # TEST
 # class PostViewSet(ModelViewSet):
@@ -20,21 +21,31 @@ import json
 class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하지 않고 추가하기 때문에 Nutrient가 생성되지 않음!
 
   # pk로 해당 post 가져오는 함수
-  def get_post(self, request, pk):
+  def get_post(self, request, date):
     try:
-      post = Post.objects.get(pk=pk)
+      # post = Post.objects.get(author=self.request.user)
+      print(self.request.user)
+      post = Post.objects.get(author=self.request.user, created_at=date)
+      print(post.created_at)
+      print(type(post.created_at))
       return post
     except Post.DoesNotExist:
       return None
 
-  # post 하나만 가져오기 -> 굳이 이럴 필요 없이, 해당 유저가 쓴 글 전체를 가져오는 것이 더 효과적인가?
-  # def get(self, request, pk):
-  #   post = self.get_post(self, pk)
-  #   if post is not None:
-  #     serializer = PostSerializer(post).data
-  #     return Response(serializer)
-  #   else:
-  #     return Response(status=status.HTTP_404_NOT_FOUND)
+  # post 테스트 시 주석처리 필요
+  def get(self, request):
+    date = self.request.GET.get('date', None)
+    if date is None: # 존재하지 않는 날짜 쿼리 시 예외처리
+      return Response(status=status.HTTP_404_NOT_FOUND)
+    # date 변환
+    date = datetime.fromtimestamp(int(date)/1000).strftime("%Y%m%d")
+    post = self.get_post(self, date)
+    # print(post)
+    if post is not None:
+      serializer = PostSerializer(post).data
+      return Response(serializer)
+    else:
+      return Response(status=status.HTTP_404_NOT_FOUND)
 
   # TODO : POST LIST 추가 필요 ** -> mypage에서만 보여줄지 고민중임!
 
@@ -84,6 +95,10 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     for i in range(supplement_length):
       supplement_amount.append(request.data['supplement'][i][1])
       request.data['supplement'][i] = request.data['supplement'][i][0]
+
+    # convert datetime format of unix timestamp string(1660575600000) -> string(20220816)
+    request.data['created_at'] = datetime.fromtimestamp(int(request.data['created_at'])/1000).strftime("%Y%m%d")
+    # print(type(datetime.fromtimestamp(request.data['created_at']/1000)))
     
     # print(breakfast_amount)
     # print(lunch_amount)
