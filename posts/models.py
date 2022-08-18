@@ -11,20 +11,21 @@ class Post(models.Model):
   lunch = models.ManyToManyField(Food, blank=True, related_name='lunch_food')
   dinner = models.ManyToManyField(Food, blank=True, related_name='dinner_food')
   snack = models.ManyToManyField(Food, blank=True, related_name='snack_food')
-  supplement = models.ManyToManyField(Food, blank=True, related_name='supplement_food') # 영양제 정보 추가
+  # supplement = models.ManyToManyField(Food, blank=True, related_name='supplement_food') # 영양제 정보 추가
   breakfast_amount = models.CharField(max_length=100, blank=True, null=True)
   lunch_amount = models.CharField(max_length=100, blank=True, null=True)
   dinner_amount = models.CharField(max_length=100, blank=True, null=True)
   snack_amount = models.CharField(max_length=100, blank=True, null=True)
-  supplement_amount=  models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
+  # supplement_amount=  models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
   
   # remark = models.TextField()
   # comment = models.Textfield() 
 
   # image 따로 빼서 관리
-  pic1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
-  pic2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
-  pic3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  breakfast_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  lunch_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  dinner_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  snack_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
   
   # created_at = models.DateTimeField()
   created_at = models.CharField(max_length=10) # string 필드로 변경

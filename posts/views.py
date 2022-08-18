@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Post
-from .serializers import PostSerializer
+from .serializers import NameSerializer, PostSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -50,7 +50,9 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     # print(post)
     if post is not None:
       serializer = PostSerializer(post).data
-      return Response(serializer)
+      # NameSerializer는 리팩토링 때 적용! (food.id와 food.pk를 함께 내려보내 주는 serializer)
+      # serializer = NameSerializer(post).data
+      return Response(serializer) 
     else:
       return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -58,21 +60,22 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
 
   # serializer에 update 메서드 추가 필요 -> (주의) put시 하루 영양성분을 다시 계산하는 로직도 구현 필요***
   def put(self, request, pk): # pk는 post.id (GET으로 프론트에서 post.id를 우선 받고, PUT메서드를 보낼 때 URL에 pk를 보내주어야 함!)
+    
     post = self.get_post_by_id(pk)
-    print(post)
-    print(post.lunch)
-    print(post.dinner)
+    # print(post)
+    # print(post.lunch)
+    # print(post.dinner)
     if post is not None:
       if post.author != request.user:
         return Response(status=status.HTTP_403_FORBIDDEN)
       
-      serializer = PostSerializer(post, data=request.data, partial=True)
+      serializer = PostSerializer(post, data=request.data, partial=True) # 동일하게 post serializer 사용 -> 근데 왜 출력형식은 다를까...?
       print(serializer.is_valid(), serializer.errors) # True {}
       if serializer.is_valid():
         post = serializer.save() # serializer의 update 메서드 호출
         return Response(PostSerializer(post).data)
       else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQEUST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       return Response()
     else:
       return Response(status=status.HTTP_404_NOT_FOUND)
@@ -81,6 +84,7 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     breakfast_amount, lunch_amount, dinner_amount, snack_amount, supplement_amount = [], [] ,[] ,[], []
     # print(request.data)
     
+    # 각 식사의 id와 amount를 분리하여 amount 따로 추출(breakfast와 breakfast_amount 분리)
     breakfast_length = len(request.data['breakfast'])
     for i in range(breakfast_length):
       breakfast_amount.append(request.data['breakfast'][i][1])
@@ -101,10 +105,10 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       snack_amount.append(request.data['snack'][i][1])
       request.data['snack'][i] = request.data['snack'][i][0]
 
-    supplement_length = len(request.data['supplement'])
-    for i in range(supplement_length):
-      supplement_amount.append(request.data['supplement'][i][1])
-      request.data['supplement'][i] = request.data['supplement'][i][0]
+    # supplement_length = len(request.data['supplement'])
+    # for i in range(supplement_length):
+    #   supplement_amount.append(request.data['supplement'][i][1])
+    #   request.data['supplement'][i] = request.data['supplement'][i][0]
 
     # convert datetime format of unix timestamp string(1660575600000) -> string(20220816)
     request.data['created_at'] = datetime.fromtimestamp(int(request.data['created_at'])/1000).strftime("%Y%m%d")
@@ -127,7 +131,7 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
         lunch_amount=str(lunch_amount), 
         dinner_amount=str(dinner_amount), 
         snack_amount=str(snack_amount),
-        supplement_amount = str(supplement_amount)
+        # supplement_amount = str(supplement_amount)
       )
       post_serializer = PostSerializer(post).data
       print(post_serializer)

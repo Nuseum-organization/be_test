@@ -39,4 +39,4 @@ class Food(models.Model):
   # updated_at = models.DateTimeField(auto_now=True)
 
   def __str__(self):
-    return f'[{self.pk}]{self.name} :: {self.category.all()} '
+    return f'{self.pk}, {self.name}'
