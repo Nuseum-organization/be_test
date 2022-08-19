@@ -45,6 +45,7 @@ class PostSerializer(serializers.ModelSerializer):
     lunch_amount = extract_amount_from_validated(validated_data, 'lunch_amount')
     dinner_amount = extract_amount_from_validated(validated_data, 'dinner_amount')
     snack_amount = extract_amount_from_validated(validated_data, 'snack_amount')
+    supplement_amount = extract_amount_from_validated(validated_data, 'supplement_amount')
 
     # if validated_data['breakfast_amount'] == '[]':
     #   breakfast_amount = [0.0]
@@ -88,9 +89,9 @@ class PostSerializer(serializers.ModelSerializer):
     snack = validated_data.pop('snack', [])
     result, category_result = calculate(snack, snack_amount, result, category_result)
 
-    # supplement = validated_data.pop('supplement', [])
-    # result, category_result = calculate(supplement, supplement_amount, result, category_result)
-    # print(result, c_result)
+    supplement = validated_data.pop('supplement', [])
+    result, category_result = calculate(supplement, supplement_amount, result, category_result)
+    # print(result, category_result)
  
     # 3.Nutrient 객체 생성(create Nutrient instance)
     # NutrientSerializer 사용하면 되지 않나? -> 테스트 필요!
@@ -124,7 +125,7 @@ class PostSerializer(serializers.ModelSerializer):
     post.lunch.set(lunch)
     post.dinner.set(dinner)
     post.snack.set(snack)
-    # post.supplement.set(supplement)
+    post.supplement.set(supplement)
     post.created_at = validated_data['created_at']
     return post
 
@@ -137,12 +138,12 @@ class PostSerializer(serializers.ModelSerializer):
     instance.lunch.set(validated_data.get("lunch", []))
     instance.dinner.set(validated_data.get("dinner", []))
     instance.snack.set(validated_data.get("snack", []))
-    # instance.supplement.set(validated_data.get("supplement", instance.supplement.all()))
+    instance.supplement.set(validated_data.get("supplement", []))
     instance.breakfast_amount = validated_data.get("breakfast_amount", "[]")
     instance.lunch_amount = validated_data.get("lunch_amount", "[]")
     instance.dinner_amount = validated_data.get("dinner_amount", "[]")
     instance.snack_amount = validated_data.get("snack_amount", "[]")
-    # instance.supplement_amount = validated_data.get("supplement_amount", instance.supplement_amount)
+    instance.supplement_amount = validated_data.get("supplement_amount", "[]")
     instance.breakfast_img = validated_data.get("breakfast_img", '')
     instance.lunch_img = validated_data.get("lunch_img", '')
     instance.dinner_img = validated_data.get("dinner_img", '')
@@ -158,6 +159,7 @@ class PostSerializer(serializers.ModelSerializer):
     lunch_amount = extract_amount_from_list(instance.lunch_amount)
     dinner_amount = extract_amount_from_list(instance.dinner_amount)
     snack_amount = extract_amount_from_list(instance.snack_amount)
+    supplement_amount = extract_amount_from_list(instance.supplement_amount)
 
     result = [0] * 13
     category_result = Category.objects.none() # 빈 쿼리셋 생성
@@ -173,6 +175,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     snack = instance.snack.all()
     result, category_result = calculate(snack, snack_amount, result, category_result)
+
+    supplement = instance.supplement.all()
+    result, category_result = calculate(supplement, supplement_amount, result, category_result)
 
     # 카테고리 저장 (오늘 먹은 음식들의 카테고리 기록)
     categories_id = []

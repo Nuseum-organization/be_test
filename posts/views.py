@@ -81,8 +81,11 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       return Response(status=status.HTTP_404_NOT_FOUND)
 
   def post(self, request):
+    # 모두 빈 값을 입력했을 때는 400 에러 리턴
+    if request.data['breakfast'] == [] and request.data['lunch'] == [] and request.data['dinner'] == [] and request.data['snack'] == [] and request.data['supplement'] == []:
+      return Response(status=status.HTTP_400_BAD_REQUEST)
+
     breakfast_amount, lunch_amount, dinner_amount, snack_amount, supplement_amount = [], [] ,[] ,[], []
-    # print(request.data)
     
     # 각 식사의 id와 amount를 분리하여 amount 따로 추출(breakfast와 breakfast_amount 분리)
     breakfast_length = len(request.data['breakfast'])
@@ -105,14 +108,13 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
       snack_amount.append(request.data['snack'][i][1])
       request.data['snack'][i] = request.data['snack'][i][0]
 
-    # supplement_length = len(request.data['supplement'])
-    # for i in range(supplement_length):
-    #   supplement_amount.append(request.data['supplement'][i][1])
-    #   request.data['supplement'][i] = request.data['supplement'][i][0]
+    supplement_length = len(request.data['supplement'])
+    for i in range(supplement_length):
+      supplement_amount.append(request.data['supplement'][i][1])
+      request.data['supplement'][i] = request.data['supplement'][i][0]
 
     # convert datetime format of unix timestamp string(1660575600000) -> string(20220816)
     request.data['created_at'] = datetime.fromtimestamp(int(request.data['created_at'])/1000).strftime("%Y%m%d")
-    # print(type(datetime.fromtimestamp(request.data['created_at']/1000)))
     
     # print(breakfast_amount)
     # print(lunch_amount)
@@ -121,9 +123,7 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     # print(supplement_amount)
 
     serializer = PostSerializer(data=request.data)
-    # print(request.data['breakfast'])
-    # print()
-    # print(serializer)
+    
     if serializer.is_valid():
       post = serializer.save(
         author=request.user, 
@@ -131,7 +131,7 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
         lunch_amount=str(lunch_amount), 
         dinner_amount=str(dinner_amount), 
         snack_amount=str(snack_amount),
-        # supplement_amount = str(supplement_amount)
+        supplement_amount = str(supplement_amount)
       )
       post_serializer = PostSerializer(post).data
       print(post_serializer)

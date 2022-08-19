@@ -11,12 +11,12 @@ class Post(models.Model):
   lunch = models.ManyToManyField(Food, blank=True, related_name='lunch_food')
   dinner = models.ManyToManyField(Food, blank=True, related_name='dinner_food')
   snack = models.ManyToManyField(Food, blank=True, related_name='snack_food')
-  # supplement = models.ManyToManyField(Food, blank=True, related_name='supplement_food') # 영양제 정보 추가
+  supplement = models.ManyToManyField(Food, blank=True, related_name='supplement_food') # 영양제 정보 추가
   breakfast_amount = models.CharField(max_length=100, blank=True, null=True)
   lunch_amount = models.CharField(max_length=100, blank=True, null=True)
   dinner_amount = models.CharField(max_length=100, blank=True, null=True)
   snack_amount = models.CharField(max_length=100, blank=True, null=True)
-  # supplement_amount=  models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
+  supplement_amount = models.CharField(max_length=100, blank=True, null=True) # 영양제 정보 추가
   
   # remark = models.TextField()
   # comment = models.Textfield() 
@@ -34,3 +34,9 @@ class Post(models.Model):
   def __str__(self):
     return f'[{self.pk}] {self.author}\'s post :: {self.created_at}'
     # return f'[{self.pk}]{self.title} :: {self.author}'
+
+# 중간 테이블 생성하여 그곳에 amount 필드 추가
+# class Post_Breakfast(models.Model):
+#   post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+#   food_id = models.ForeignKey(Food, on_delete=models.CASCADE)
+#   amount = models.IntegerField(default=0)
