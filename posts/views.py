@@ -67,6 +67,9 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
     # print(post.dinner)
     if post is not None:
       if post.author != request.user:
+        data = {
+          'err_msg' : '해당 포스트의 작성자가 아닙니다.'
+        }
         return Response(status=status.HTTP_403_FORBIDDEN)
       
       serializer = PostSerializer(post, data=request.data, partial=True) # 동일하게 post serializer 사용 -> 근데 왜 출력형식은 다를까...?
