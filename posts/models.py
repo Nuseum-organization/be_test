@@ -22,10 +22,18 @@ class Post(models.Model):
   # comment = models.Textfield() 
 
   # image 따로 빼서 관리
-  breakfast_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
-  lunch_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
-  dinner_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
-  snack_img = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  breakfast_img1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  breakfast_img2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  breakfast_img3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  lunch_img1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  lunch_img2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  lunch_img3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  dinner_img1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  dinner_img2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  dinner_img3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  snack_img1 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  snack_img2 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
+  snack_img3 = models.ImageField(upload_to='post/images/%Y/%m/%d', blank=True)
   
   # created_at = models.DateTimeField()
   created_at = models.CharField(max_length=10) # string 필드로 변경
