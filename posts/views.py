@@ -85,8 +85,8 @@ class PostView(APIView): # admin에서 추가할 경우 serializer를 사용하�
 
   def post(self, request):
     # 모두 빈 값을 입력했을 때는 400 에러 리턴
-    if request.data['breakfast'] == [] and request.data['lunch'] == [] and request.data['dinner'] == [] and request.data['snack'] == [] and request.data['supplement'] == []:
-      return Response(status=status.HTTP_400_BAD_REQUEST)
+    # if request.data['breakfast'] == [] and request.data['lunch'] == [] and request.data['dinner'] == [] and request.data['snack'] == [] and request.data['supplement'] == []:
+    #   return Response(status=status.HTTP_400_BAD_REQUEST)
 
     breakfast_amount, lunch_amount, dinner_amount, snack_amount, supplement_amount = [], [] ,[] ,[], []
     
