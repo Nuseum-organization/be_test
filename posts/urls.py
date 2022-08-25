@@ -1,15 +1,8 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import path
 from . import views
 
-# TEST(ViewSet)
-# app_name = "posts"
-
-# router = DefaultRouter()
-# router.register("", views.PostViewSet)
-# urlpatterns = router.urls
-
 urlpatterns = [
-  path('', views.PostView.as_view()),
-  path('<int:pk>/', views.PostView.as_view()), # GET 메서드에는 pk를 뺐는데 적용이 됐는지 확인 필요!(<int:pk>를 넣으면 PUT만 호출되어야 함)
+  path('', views.PostDateView.as_view()),
+  path('<int:pk>/', views.PostIdView.as_view()),
+  # path('image/', views.model_image_upload), # formdata 방식
 ]

@@ -1,19 +1,18 @@
 from django.db import models
 
-class Category(models.Model):
-  name = models.CharField(max_length=30)
-  # slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+# class Category(models.Model):
+#   name = models.CharField(max_length=30)
 
-  def __str__(self):
-    return self.name
+#   def __str__(self):
+#     return self.name
 
-  class Meta:
-    verbose_name_plural = 'categories'
+#   class Meta:
+#     verbose_name_plural = 'categories'
 
 class Food(models.Model):
   name = models.CharField(max_length=200)
-  category = models.ManyToManyField(Category, blank=True)
-  # category = models.CharField(max_length=50) # "육류, 유제품" # (복수인 경우) -> parsing해서 리스트에 저장?
+  # category = models.ManyToManyField(Category, blank=True) # 중간테이블 생성 필요?
+  category = models.CharField(max_length=30, blank=True)
 
   energy = models.FloatField(default=0.0)
   protein = models.FloatField(default=0.0)
@@ -32,11 +31,6 @@ class Food(models.Model):
 
   classifier = models.IntegerField(default=0)
 
-  # amount = models.IntegerField(default=0)
-  # is_beverage = models.BooleanField(default=False)
-  
-  # created_at = models.DateTimeField(auto_now_add=True)
-  # updated_at = models.DateTimeField(auto_now=True)
-
   def __str__(self):
-    return f'{self.pk}, {self.name}'
+    # return f'{self.pk}, {self.name}' # 프론트에서 pk가 필요하면 이것 사용
+    return f'{self.name} :: {self.category}' # 그렇지 않으면 이름만 사용
