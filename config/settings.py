@@ -47,7 +47,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 ALLOWED_HOSTS = [
-    'nuseum-server.herokuapp.com',
+    'cryptic-castle-40575.herokuapp.com',
     '127.0.0.1',
     ]
 
