@@ -81,22 +81,15 @@ class PostDateView(APIView):
     date = datetime.fromtimestamp(int(date)/1000)
     post = self.get_post(self, date)
     if post is not None:
-      # media_root = f'{settings.IMAGE_URL}\\{year}\\{month}\\{day}'
+      
       breakfast_consumptions = Consumption.objects.filter(post=post.id, meal_type='breakfast')
       # breakfast 이미지 처리
       breakfast_images = FoodImage.objects.filter(post=post.id, meal_type='breakfast')
-      # print(breakfast_images)
       # 쿼리셋에서 이미지 이름들을 꺼내서 경로로 변경해서 리스트로 저장하는 로직 추가(가능하면 함수로 뺄 것!) 
       breakfast_images_queryset = breakfast_images.values('image')
       breakfast_images_list = []
       for i in range(len(breakfast_images_queryset)):
-        # print(breakfast_images_queryset[i]['image'])
         breakfast_images_list.append(breakfast_images_queryset[i]['image'])
-      # print(breakfast_images_list)
-      # breakfast_images_list = list(breakfast_images.values_list('image'))
-      # print(breakfast_images_list) # [('110_1.jpeg',)]
-      # print(type(breakfast_images_list))
-      
       
       lunch_consumptions = Consumption.objects.filter(post=post.id, meal_type='lunch')
       # lunch 이미지 처리
@@ -104,9 +97,7 @@ class PostDateView(APIView):
       lunch_images_queryset = lunch_images.values('image')
       lunch_images_list = []
       for i in range(len(lunch_images_queryset)):
-        # print(lunch_images_queryset[i]['image'])
         lunch_images_list.append(lunch_images_queryset[i]['image'])
-      # print(lunch_images_list)
       
       dinner_consumptions = Consumption.objects.filter(post=post.id, meal_type='dinner')
       # dinner 이미지 처리
@@ -114,9 +105,7 @@ class PostDateView(APIView):
       dinner_images_queryset = dinner_images.values('image')
       dinner_images_list = []
       for i in range(len(dinner_images_queryset)):
-        # print(dinner_images_queryset[i]['image'])
         dinner_images_list.append(dinner_images_queryset[i]['image'])
-      # print(dinner_images_list)
       
       snack_consumptions = Consumption.objects.filter(post=post.id, meal_type='snack')
       # snack 이미지 처리
@@ -124,20 +113,14 @@ class PostDateView(APIView):
       snack_images_queryset = snack_images.values('image')
       snack_images_list = []
       for i in range(len(snack_images_queryset)):
-        # print(snack_images_queryset[i]['image'])
         snack_images_list.append(snack_images_queryset[i]['image'])
-      # print(snack_images_list)
 
       water_consumption = WaterConsumption.objects.get(post=post.id)
-      # 데이터 가져오는 쿼리문 추가
-      # print(water_consumption.amount)
-       # Queryset to JSON
-      # data = consumptions.values()
+      # Queryset to JSON
       data = {
         'meal' : {
           'breakfast' : {
             'data' : breakfast_consumptions.values(),
-            # 'image' : f'{settings.MEDIA_ROOT}\\{breakfast_images.values()}',
             'image' : breakfast_images_list,
           },
           'lunch' : {
@@ -172,7 +155,7 @@ class PostDateView(APIView):
       return Response(status=status.HTTP_400_BAD_REQUEST, data=data)
 
     # 날짜 변환: unix timestamp string(1660575600000) -> datetime
-    date_data = datetime.fromtimestamp(int(request.data['created_at'])/1000) # 이미지 만들 때 context_data로 넘겨줘야 함!
+    date_data = datetime.fromtimestamp(int(request.data['created_at'])/1000) # 이미지 만들 때 context_data로 넘겨주기!
     request.data['created_at'] = datetime.fromtimestamp(int(request.data['created_at'])/1000)
     
     # [1]. postSerializer 통해 역직렬화하여 값을 DB에 저장 -> Post 객체 생성
@@ -184,21 +167,19 @@ class PostDateView(APIView):
       post_serializer = PostSerializer(post).data # 포스트 생성**
 
       # [2]. 포스트가 생성되고 난 뒤에 그 다음에 해당 post id를 가지고 Post_Consumption 테이블 지정
-      # [2]-1. 입력받은 데이터로 음식 consumption 생성하는 로직**
-      # 방금 생성된 포스트의 pk값 가져오기 -> 전체적으로 사용됨! ** <<post_id는 전역변수처럼 사용>>
-      post_id = post_serializer['id'] 
+      # (입력받은 데이터로 음식 consumption 생성하는 로직)
+      # 방금 생성된 포스트의 pk값
+      post_id = post_serializer['id']
       # <1> request.data['meal'] 부분 처리
       # <1>-1 'meal'(foods)의 'data' 입력값들부터 처리
       for i in range(4):
-        classifier = ['breakfast', 'lunch', 'dinner', 'snack'] # 처음에 meal_type이 결정되므로 따로 받지 않아도 될듯? **
-        for elem in request.data['meal'][classifier[i]]: # meal -> food 변경 예정
-          # print(request.data['meal'][classifier[i]]) # dict
+        classifier = ['breakfast', 'lunch', 'dinner', 'snack']
+        for elem in request.data['meal'][classifier[i]]:
           temp_dict = request.data['meal'][classifier[i]] 
           # *temp_dict*
           # {'data': [{'food_id': 4, 'amount': 400}, {'food_id': 3, 'amount': 300}, {'food_id': 2, 'amount': 200}, {'food_id': 1, 'amount': 100}], 
           #  'image': []}
           if elem == 'data':
-            # print(temp_dict['data'])
             for elem in temp_dict['data']:
               # 입력받은 값들을 consumption 객체의 각 필드에 입력
               food_id = elem['food_id']
@@ -220,12 +201,12 @@ class PostDateView(APIView):
           # <1>-2. 'img'부분 처리 : base64 인코딩/디코딩
           else: # elem(str) == 'img'
             num = 0
-            for elem in temp_dict['image']: # image 개수만큼 for문을 돌기 때문에, 굳이 음식 개수와 이미지 개수를 맞출 필요는 없음!
+            for elem in temp_dict['image']:
               image = temp_dict['image'] # 리스트 (리스트 전체가 아니라 개별 string을 넣는 것이 훨씬 빠름!)
               
               image_data = {
                 # 'post' : post_id,
-                'images' : image[num], # 만약 PUT이 일어날 때는 IDX 처리를 어떻게 할 것인지 고민 필요! **
+                'images' : image[num],
                 'meal_type' : classifier[i],
               }
               
@@ -240,15 +221,12 @@ class PostDateView(APIView):
 
 
       # <2> 입력받은 데이터로 '수분(물)' consumption 생성하는 로직** (수분은 '단일 값'만 입력받음)
-      # post_id = post_serializer['id']
-      # print(request.data['water'])
       water_amount = request.data['water']
       water_consumption_data = {
         'post' : post_id,
         'amount' : water_amount,
       }
       water_serializer = WaterSerializer(data=water_consumption_data)
-      # print(water_serializer)
       if water_serializer.is_valid():
         water_serializer.save()
       else:
@@ -285,7 +263,6 @@ class PostIdView(APIView):
       breakfast_images = FoodImage.objects.filter(post=post.id, meal_type='breakfast')
       breakfast_images_values = list(breakfast_images.values())
       breakfast_images_queryset = breakfast_images.values('image')
-      # breakfast_images_queryset = FoodImage.objects.filter(post=post.id, meal_type='breakfast').values('image')
       breakfast_images_list = []
       for i in range(len(breakfast_images_queryset)):
         breakfast_images_list.append(breakfast_images_queryset[i]['image'])
@@ -303,16 +280,12 @@ class PostIdView(APIView):
       snack_images_list = list(snack_images.values())
 
       water_consumption = WaterConsumption.objects.get(post=post.id)
-       # Queryset to JSON
-      # data = consumptions.values()
-      # =======================* 경준님이 원하는 출력 형식 *(참고)===================================
+      # Queryset to JSON
       data = {
         'meal' : {
           'breakfast' : {
             'data' : breakfast_consumptions.values(),
-            # 'image' : breakfast_images_values, # 어떤 것이 가장 PUT에 적합한지 생각해볼 것!
             'image' : breakfast_images_list,
-            # 'image' : breakfast_images_queryset,
           },
           'lunch' : {
             'data' : lunch_consumptions.values(),
@@ -338,89 +311,30 @@ class PostIdView(APIView):
       }
       return Response(status=status.HTTP_404_NOT_FOUND, data=data)
 
-  # 순서 쌍 or 특정 개체에 대한 수정 => PUT 메서드 수정 필요! ****** (id_get 메서드를 수정하는 로직에만 사용?)
+  # PUT 로직
   def put(self, request, pk):
     
     post = self.get_post_by_id(pk)
-    # print(post.created_at) # 2022-11-29 00:00:00
-    date_data = post.created_at
-    # print(type(post.created_at)) # <class 'datetime.datetime'>
+    date_data = post.created_at # 2022-11-29 00:00:00
     if post is not None:
       if post.author != request.user:
         data = {
           'error_msg' : '포스트의 작성자가 아닙니다.'
         }
         return Response(status=status.HTTP_403_FORBIDDEN, data=data)
-      # ================================== TODO ====================================================================
-      # classfier별로 오름차순 정렬이 되어있으므로, classfier 개수에 맞춰서 순서대로 업데이트/삭제/ + 개수 이상이면 생성
-      # POST 로직 참고하여 수정!
-
-      # ================================= 수정전 =================================================================
-      # # <1> 음식에 대해서 PUT 처리**
-      # consumptions = Consumption.objects.filter(post=post.id)
-      # # print(consumptions)
-      # # print(len(consumptions)) # target
-      # # print(len(request.data['meal'])) # input
-      # for i in range(len(request.data['meal'])): # 순서대로(=오름차순) 가져오는지 여부도 중요함!**
-      #   print(consumptions[i])
-      #   # 1-1.빈 리스트는 '삭제' 처리
-      #   if request.data['meal'][i] == {}:
-      #     food_data = {
-      #       "deprecated" : True
-      #     }
-      #   else:
-      #     # 1-2.빈 리스트가 아닌 것들은 '수정' 또는 '생성'
-      #     food_data = {
-      #       'post' : post.id,
-      #       'food' : request.data['meal'][i]['food_id'],
-      #       'amount' : request.data['meal'][i]['amount'],
-      #       'meal_type' : request.data['meal'][i]['meal_type']
-      #     }
-
-      #   # 2-1.수정하려는 consumption의 수보다 request.data의 수가 작거나 같을 때에만 해당 쌍에 맞춰서 수정 진행
-      #   if i < len(consumptions):
-      #     consumption_update_serializer = ConsumptionSerializer(consumptions[i], data=food_data, partial=True)
-      #     # print(request.data['meal'][i])
-      #     if consumption_update_serializer.is_valid():
-      #       # 각 consumption 객체 update
-      #       consumption_update_serializer.save()
-      #     else:
-      #       return Response(status=status.HTTP_400_BAD_REQUEST, data=consumption_update_serializer.errors)
-      #   # 2-2.수정하려는 consumption의 수보다 request.data의 수가 더 많으면 "추가로 생성"
-      #   else: 
-      #     consumption_create_serializer = ConsumptionSerializer(data=food_data)
-      #     if consumption_create_serializer.is_valid():
-      #       consumption_create_serializer.save()
-      # # ===============================================================================================================
-
-      # ================================= 수정후 =================================================================
-      # <1> 음식에 대해서 PUT 처리**
-      # consumptions = Consumption.objects.filter(post=post.id)
-      # print(consumptions)
-      # print(consumptions)
-      # print(len(consumptions)) # target
-      # print(len(request.data['meal'])) # input
+      
       for i in range(4):
         classifier = ['breakfast', 'lunch', 'dinner', 'snack']
-        for cateory in request.data['meal'][classifier[i]]: # 순서대로(=오름차순) 가져오는지 여부도 중요함!**
+        for cateory in request.data['meal'][classifier[i]]: # 순서대로(=오름차순) 가져옴
           consumptions = Consumption.objects.filter(post=post.id, meal_type=classifier[i])
-          # print(consumptions) # <QuerySet [<Consumption: [post_no.161]더덕구이 :: , 300, breakfast>, <Consumption: [post_no.161]병어구이 :: , 400, breakfast>]>
-          # print(cateory)
           temp_dict = request.data['meal'][classifier[i]]
-          len_data = len(temp_dict['data'])
-          len_consumptions = len(consumptions)
-          # print()
-          # print(len_data)
-          # print()
-          # len_image = len(temp_dict['image'])
+          len_data = len(temp_dict['data']) # 총 입력받은 음식 개체 수
+          len_consumptions = len(consumptions) # 현재 해당 카테고리(ex. breakfast)에 존재하는 음식 개체 수
           if cateory == 'data':
-            cnt_data = 0
+            cnt_data = 0 # 현재 index
             for elem in temp_dict['data']:
-              # print(elem) # id 순서(=오름차순)대로 나옴! -> 가능성 있음!
-              # if cnt_data < len_data: # 기존 개수에 포함되면 UPDATE
               if cnt_data < len_consumptions: # 기존 개수에 포함되면 UPDATE
                 if elem == {}:
-                  # TODO : deprecated 활성화 로직 구현
                   food_data = {
                     "deprecated" : True
                   }
