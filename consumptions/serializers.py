@@ -73,7 +73,7 @@ class SupplementSerializer(serializers.ModelSerializer):
 class SupplementDetailSerializer(serializers.ModelSerializer):
   class Meta:
     model = SupplementConsmption
-    exclude = ('id', 'post', 'supplement', 'amount',) # 이 세가지 제외하고 모두 보여줄 것!
+    exclude = ('post', 'supplement', 'amount',) # 이 세가지 제외하고 모두 보여줄 것!
 
 # 이미지 처리
 class ImageDecodeSerializer(serializers.ModelSerializer):
