@@ -2,8 +2,8 @@ from django.shortcuts import render
 from .models import Post
 from .serializers import PostSerializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from consumptions.serializers import ConsumptionSerializer, WaterSerializer, ImageDecodeSerializer
-from consumptions.models import Consumption, WaterConsumption, FoodImage
+from consumptions.serializers import ConsumptionSerializer, WaterSerializer, ImageDecodeSerializer, SupplementSerializer, SupplementDetailSerializer
+from consumptions.models import Consumption, WaterConsumption, FoodImage, SupplementConsmption
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -15,49 +15,10 @@ from django.utils.decorators import method_decorator
 from django.conf import settings
 from datetime import datetime
 import boto3
-
-
-from .forms import FoodImageForm
-
-# 이미지 처리 : form data를 사용하는 방식
-# ========================================================================
-# @method_decorator(csrf_exempt, name='dispatch') # 
-# def model_image_upload(request):
-#   if request.method == "POST":
-#     # print(request.POST['post']) # ['23'] / ['23', '20'] -> 23, 20 (6글자 string)
-#     # print(type(request.POST['post'])) # str / str
-#     # print(request.POST) 
-#     # print(request.POST['meal_type']) # ['breakfast'] / ['breakfast', 'lunch'] 
-#     # print(type(request.POST['meal_type'])) # str / str
-#     # print(request.FILES)
-#     # 여러 개인 경우 이렇게 처리...
-#     post_id_list = list(map(int, request.POST['post'].split(',')))
-#     # print(post_id_list)
-#     meal_type_list = request.POST['meal_type'].split(',')
-#     request_count = len(post_id_list)
-#     image_list = request.FILES.getlist('image')
-#     for i in range(request_count):
-#       text_data = {
-#         'post' : int(post_id_list[i]),
-#         'meal_type' : meal_type_list[i]
-#       }
-#       image_data = {
-#         'image' : image_list[i]
-#       }
-#       form = FoodImageForm(text_data, image_data)
-#       # print(form)
-#       if form.is_valid():
-#         form.save()
-#         return HttpResponse(json.dumps({"status" : "Success"}))
-#       else:
-#         return HttpResponse(json.dumps({"status" : "Failed"}))
-# ==========================================================================
-
+from consumptions.utils import create_image_url, delete_image
 
 # Date를 이용하여 Post에 접근하는 뷰 -> GET, POST 메서드
 class PostDateView(APIView):
-
-  # parser_classes = (MultiPartParser, FormParser) # multipart 사용 시 추가
 
   # 날짜로 해당 post 가져오는 메서드
   def get_post(self, request, date):
@@ -116,6 +77,8 @@ class PostDateView(APIView):
         snack_images_list.append(snack_images_queryset[i]['image'])
 
       water_consumption = WaterConsumption.objects.get(post=post.id)
+      supplement_consumption = SupplementConsmption.objects.filter(post=post.id)
+      supplements = SupplementDetailSerializer(instance=supplement_consumption, many=True) # 직렬화 (DB -> JSON)
       # Queryset to JSON
       data = {
         'meal' : {
@@ -137,6 +100,7 @@ class PostDateView(APIView):
           }
         },
         'water' : water_consumption.amount,
+        'supplement' : supplements.data,
         'post_id': post.id,
       }
       return Response(data=data) 
@@ -232,6 +196,28 @@ class PostDateView(APIView):
       else:
         return Response(status=status.HTTP_400_BAD_REQUEST, data=water_serializer.errors)
 
+      # <3> 입력받은 데이터로 '영양제' consumption 생성하는 로직 (여러 개 입력 가능)
+      supplement_input = request.data['supplement'] # supplement_data는 '리스트'일 것!
+      supplement_count = len(supplement_input)
+      for i in range(supplement_count):
+        supplement_image = supplement_input[i]['image']
+        supplement_name = supplement_input[i]['name']
+
+        image_url = create_image_url(supplement_image, post_id, date_data, i) # s3에 객체 생성 후 url 리턴
+        
+        supplement_data = {
+          'post' : post_id,
+          'name' : supplement_name,
+          'manufacturer' : supplement_input[i]['manufacturer'],
+          # 'supplement_amount' : supplement_input[i]['amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
+          'image' : image_url,
+        }
+        supplement_serializer = SupplementSerializer(data=supplement_data)
+        if supplement_serializer.is_valid():
+          supplement_serializer.save()
+        else:
+          return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_serializer.errors)
+
       return Response(data=post_serializer, status=status.HTTP_200_OK)
     else:
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -280,6 +266,8 @@ class PostIdView(APIView):
       snack_images_list = list(snack_images.values())
 
       water_consumption = WaterConsumption.objects.get(post=post.id)
+      supplement_consumption = SupplementConsmption.objects.filter(post=post.id)
+      supplements = SupplementDetailSerializer(instance=supplement_consumption, many=True) # 직렬화 (DB -> JSON)
       # Queryset to JSON
       data = {
         'meal' : {
@@ -301,6 +289,7 @@ class PostIdView(APIView):
           }
         },
         'water_amount' : water_consumption.amount,
+        'supplement' : supplements.data,
         'post_id' : post.id,
       }
       return Response(data=data)
@@ -339,8 +328,8 @@ class PostIdView(APIView):
                     "deprecated" : True
                   }
                 else: # 업데이트 로직
-                  print(consumptions[cnt_data])
-                  print(consumptions[cnt_data].id)
+                  # print(consumptions[cnt_data])
+                  # print(consumptions[cnt_data].id)
                   # target_food_id = Consumption.objects.get(post=post.id, )
                   # food_id = request.data['meal'][classifier[i]]['data'][cnt_data]['food_id']
                   # print(food_id)
@@ -352,7 +341,7 @@ class PostIdView(APIView):
                     # meal_type은 고정임 -> 바꾸려면 다른 타입에 가서 생성해야 함!
                     # 'meal_type' : request.data['meal'][i]['meal_type'] # meal_type을 바꾸는건 여기서 지우고 다른곳에서 새로 생성하는 로직으로 구현
                   }
-                print(len_data, cnt_data)
+                # print(len_data, cnt_data)
                 consumption_update_serializer = ConsumptionSerializer(consumptions[cnt_data], data=food_data, partial=True) # 여기까지 수정****
                 if consumption_update_serializer.is_valid():
                   # 각 consumption 객체 update
@@ -369,7 +358,7 @@ class PostIdView(APIView):
                   # meal_type은 고정임 -> 바꾸려면 다른 타입에 가서 생성해야 함!
                   # 'meal_type' : request.data['meal'][i]['meal_type'] # meal_type을 바꾸는건 여기서 지우고 다른곳에서 새로 생성하는 로직으로 구현
                 }
-                print("추가 음식 개체 생성!!!!")
+                # print("추가 음식 개체 생성!!!!")
                 consumption_create_serializer = ConsumptionSerializer(data=food_data)
                 if consumption_create_serializer.is_valid():
                   consumption_create_serializer.save()
@@ -378,22 +367,22 @@ class PostIdView(APIView):
               cnt_data += 1  
           else: # category == 'image': => 'image' 갱신 로직 ================================= 여기까지 완료 =====================================
             image_instances = FoodImage.objects.filter(post=post.id, meal_type=classifier[i])
-            print("IMAGE:", image_instances)
-            print("IMAGE:", image_instances.values('image'))
+            # print("IMAGE:", image_instances)
+            # print("IMAGE:", image_instances.values('image'))
             len_image = len(temp_dict['image'])
             len_food_images = len(image_instances)
             cnt_image = 0
-            print(temp_dict['image'])
+            # print(temp_dict['image'])
             for elem in temp_dict['image']:
-              print(elem)
+              # print(elem)
               if cnt_image < len_food_images:
                 if elem == '':
                   # TODO : s3 삭제로직 추가 **
                   # S3에서 삭제
                   # print(food_images)
-                  print(image_instances.values('image')[cnt_image])
+                  # print(image_instances.values('image')[cnt_image])
                   key = image_instances.values('image')[cnt_image]['image'].split('jinhyung.test.aws/')[1] # 파일명
-                  print(key)
+                  # print(key)
                   s3_client = boto3.client(
                     's3',
                     aws_access_key_id = settings.AWS_ACCESS_KEY_ID,
@@ -409,7 +398,7 @@ class PostIdView(APIView):
                   if image_update_serializer.is_valid():
                     # 각 food_image 객체 삭제처리
                     image_update_serializer.save()
-                    print(image_update_serializer)
+                    # print(image_update_serializer)
                   else:
                     return Response(status=status.HTTP_400_BAD_REQUEST, data=image_update_serializer.errors)
               else: # 기존 이미지 이외로 들어온 것들에 대해서는 create 처리 (cnt_image >= len_image)
@@ -441,16 +430,59 @@ class PostIdView(APIView):
       else:
         return Response(status=status.HTTP_400_BAD_REQUEST, data=water_update_serializer.errors)
 
+      # <3> 영양제에 대해서 PUT 처리 - 수정하고 싶으면 기존에 존재하는 객체 삭제 후 재생성하는 방식!
+      list_input_supplement = request.data['supplement']
+      len_input_supplement = len(list_input_supplement)
+      supplement_consumptions = SupplementConsmption.objects.filter(post=post.id)
+      len_supplement_consupmtions = len(supplement_consumptions)
+      # cnt_input_supplement = 0
+      for i in range(len_input_supplement):
+        if i < len_supplement_consupmtions:
+          if list_input_supplement[i] == {}: # 삭제 마킹
+            supplement_data = {
+              'deprecated' : True
+            }
+            supplement_update_serializer = SupplementSerializer(supplement_consumptions[i], data=supplement_data, partial=True)
+            if supplement_update_serializer.is_valid():
+              supplement_update_serializer.save()
+            else:
+              return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_update_serializer.errors)
+            # s3 이미지 삭제
+            delete_image(supplement_consumptions[i].image)
+        else: # 추가로 들어온 정보에 대해서는 create 수행
+          supplement_image = list_input_supplement[i]['image']
+          supplement_name = list_input_supplement[i]['name']
+
+          image_url = create_image_url(supplement_image, post.id, date_data, i) # s3에 객체 생성 후 url 리턴
+          supplement_data = {
+            'post' : post.id,
+            'name' : supplement_name,
+            'manufacturer' : list_input_supplement[i]['manufacturer'],
+            # 'supplement_amount' : list_input_supplement[i]['supplement_amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
+            'image' : image_url,
+          }
+          supplement_create_serializer = SupplementSerializer(data=supplement_data)
+          if supplement_create_serializer.is_valid():
+            supplement_create_serializer.save()
+          else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_create_serializer.errors)
+      
       # 수정 & 추가 생성이 완료되었으면 deprecated consumption는 삭제
       try:
         deprecated_food_consumptions = Consumption.objects.filter(post=post.id, deprecated=True)
         deprecated_food_images = FoodImage.objects.filter(post=post.id, deprecated=True)
+        deprecated_supplement_consumptions = SupplementConsmption.objects.filter(post=post.id, deprecated=True)
         # print(deprecated_consumptions)
         deprecated_food_consumptions.delete()
         deprecated_food_images.delete()
-        print('deprecated consumptions 삭제 완료!')
+        deprecated_supplement_consumptions.delete()
+        # print('deprecated consumptions 삭제 완료!')
       except:
-        print('deprecated consumptions가 존재하지 않습니다!')
+        # print('deprecated consumptions가 존재하지 않습니다!')
+        data = {
+          "err_msg" : "deprecated consumptions가 존재하지 않습니다!" 
+        }
+        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
       breakfast_consumptions = Consumption.objects.filter(post=post.id, meal_type='breakfast')
       breakfast_images = FoodImage.objects.filter(post=post.id, meal_type='breakfast')
@@ -481,6 +513,8 @@ class PostIdView(APIView):
         snack_images_list.append(snack_images_queryset[i]['image'])
 
       water_consumption = WaterConsumption.objects.get(post=post.id)
+      supplement_consumption = SupplementConsmption.objects.filter(post=post.id)
+      supplements = SupplementDetailSerializer(instance=supplement_consumption, many=True) # 직렬화
 
       data = {
         'meal' : {
@@ -502,6 +536,7 @@ class PostIdView(APIView):
           }
         },
         'water' : water_consumption.amount,
+        'supplement' : supplements.data,
         'post_id' : post.id,
       }
       return Response(data=data, status=status.HTTP_200_OK)
