@@ -450,22 +450,23 @@ class PostIdView(APIView):
             # s3 이미지 삭제
             delete_image(supplement_consumptions[i].image)
         else: # 추가로 들어온 정보에 대해서는 create 수행
-          supplement_image = list_input_supplement[i]['image']
-          supplement_name = list_input_supplement[i]['name']
-
-          image_url = create_image_url(supplement_image, post.id, date_data, i) # s3에 객체 생성 후 url 리턴
-          supplement_data = {
-            'post' : post.id,
-            'name' : supplement_name,
-            'manufacturer' : list_input_supplement[i]['manufacturer'],
-            # 'supplement_amount' : list_input_supplement[i]['supplement_amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
-            'image' : image_url,
-          }
-          supplement_create_serializer = SupplementSerializer(data=supplement_data)
-          if supplement_create_serializer.is_valid():
-            supplement_create_serializer.save()
-          else:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_create_serializer.errors)
+          # 추가했다가 바로 지우는 경우 예외처리(= {}객체가 생성되지만 해당 인덱스에 객체가 존재하지 않는 경우)
+          if list_input_supplement[i] != {}:
+            supplement_image = list_input_supplement[i]['image']
+            supplement_name = list_input_supplement[i]['name']
+            image_url = create_image_url(supplement_image, post.id, date_data, i) # s3에 객체 생성 후 url 리턴
+            supplement_data = {
+              'post' : post.id,
+              'name' : supplement_name,
+              'manufacturer' : list_input_supplement[i]['manufacturer'],
+              # 'supplement_amount' : list_input_supplement[i]['supplement_amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
+              'image' : image_url,
+            }
+            supplement_create_serializer = SupplementSerializer(data=supplement_data)
+            if supplement_create_serializer.is_valid():
+              supplement_create_serializer.save()
+            else:
+              return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_create_serializer.errors)
       
       # 수정 & 추가 생성이 완료되었으면 deprecated consumption는 삭제
       try:
