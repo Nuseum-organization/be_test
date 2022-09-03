@@ -70,6 +70,7 @@ PROJECT_APPS = [
     "foods.apps.FoodsConfig",
     "posts.apps.PostsConfig",
     "consumptions.apps.ConsumptionsConfig",
+    "receipts.apps.ReceiptsConfig",
 ]
 
 THIRD_PARTY_APPS = [

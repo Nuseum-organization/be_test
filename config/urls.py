@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/v1/post/', include("posts.urls")),
     path('api/v1/food/', include("foods.urls")),
     path('api/v1/consumption/', include("consumptions.urls")),
+    path('api/v1/receipt/', include("receipts.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
