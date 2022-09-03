@@ -208,7 +208,7 @@ class PostDateView(APIView):
           supplement_image = supplement_input[i]['image']
           supplement_name = supplement_input[i]['name']
 
-          image_url = create_image_url(supplement_image, post_id, date_data, i) # s3에 객체 생성 후 url 리턴 
+          image_url = create_image_url(supplement_image, post_id, date_data, supplement_name, i) # s3에 객체 생성 후 url 리턴(supplement_name 추가*)
           
           supplement_data = {
             'post' : post_id,
@@ -461,7 +461,7 @@ class PostIdView(APIView):
           if list_input_supplement[i] != {}:
             supplement_image = list_input_supplement[i]['image']
             supplement_name = list_input_supplement[i]['name']
-            image_url = create_image_url(supplement_image, post.id, date_data, i) # s3에 객체 생성 후 url 리턴
+            image_url = create_image_url(supplement_image, post.id, date_data, supplement_name ,i) # s3에 객체 생성 후 url 리턴(supplement_name추가*)
             supplement_data = {
               'post' : post.id,
               'name' : supplement_name,

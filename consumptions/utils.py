@@ -103,7 +103,7 @@ def week_month_calculate(week_data):
 
   return sum_week_data
 
-def create_image_url(image_string, post_id, date_data, num):
+def create_image_url(image_string, post_id, date_data, supplement_name, num):
 
   year = date_data.strftime('%Y')
   month = date_data.strftime('%m')
@@ -115,8 +115,8 @@ def create_image_url(image_string, post_id, date_data, num):
     image_data = base64.b64decode(data) # 이미지 파일 생성
     s3r = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
     key = "%s"%(f'{year}/{month}/{day}')
-    s3r.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(Key=key+'/%s'%(f'{post_id}_supplement_{num}.{ext}'), Body=image_data, ContentType='jpg')
-    aws_url = f'{settings.IMAGE_URL}/{year}/{month}/{day}/{post_id}_supplement_{num}.{ext}'
+    s3r.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(Key=key+'/%s'%(f'{post_id}_{supplement_name}_{num}.{ext}'), Body=image_data, ContentType='jpg')
+    aws_url = f'{settings.IMAGE_URL}/{year}/{month}/{day}/{post_id}_{supplement_name}_{num}.{ext}'
     # FoodImage.objects.create(post=post, image=aws_url, meal_type=meal_type)
 
   except TypeError:
