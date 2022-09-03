@@ -145,43 +145,46 @@ class PostDateView(APIView):
           #  'image': []}
           if elem == 'data':
             for elem in temp_dict['data']:
-              # 입력받은 값들을 consumption 객체의 각 필드에 입력
-              food_id = elem['food_id']
-              food_amount = elem['amount']
+              # TODO: 생성했다가 지웠을 때의 예외처리
+              if elem != {}:
+                # 입력받은 값들을 consumption 객체의 각 필드에 입력
+                food_id = elem['food_id']
+                food_amount = elem['amount']
 
-              consumption_data = {
-                'post' : post_id,
-                'food' : food_id, # *
-                'amount' : food_amount, # *
-                'meal_type' : classifier[i],
-              }
+                consumption_data = {
+                  'post' : post_id,
+                  'food' : food_id, # *
+                  'amount' : food_amount, # *
+                  'meal_type' : classifier[i],
+                }
 
-              consumption_serializer = ConsumptionSerializer(data=consumption_data)
-              if consumption_serializer.is_valid():
-                # consumption 객체 생성
-                consumption_serializer.save()
-              else:
-                return Response(status=status.HTTP_400_BAD_REQUEST, data=consumption_serializer.errors)
+                consumption_serializer = ConsumptionSerializer(data=consumption_data)
+                if consumption_serializer.is_valid():
+                  # consumption 객체 생성
+                  consumption_serializer.save()
+                else:
+                  return Response(status=status.HTTP_400_BAD_REQUEST, data=consumption_serializer.errors)
           # <1>-2. 'img'부분 처리 : base64 인코딩/디코딩
           else: # elem(str) == 'img'
             num = 0
             for elem in temp_dict['image']:
-              image = temp_dict['image'] # 리스트 (리스트 전체가 아니라 개별 string을 넣는 것이 훨씬 빠름!)
-              
-              image_data = {
-                # 'post' : post_id,
-                'images' : image[num],
-                'meal_type' : classifier[i],
-              }
-              
-              # 입력 값이 맞는지 체크 필요!
-              image_decode_serializer = ImageDecodeSerializer(data=image_data, context={'request':request, 'images':image_data.get('images'), 'post':post, 'meal_type':classifier[i], 'date':date_data, 'num' : num})
-              num += 1 # PUT에서 값이 중복되는지 체크 필요 ** (num을 아예 내부적으로 할당해도 될듯?)
-              if image_decode_serializer.is_valid():
-                image_decode_serializer.save()
-                # return Response(data=image_decode_serializer.data, status=status.HTTP_201_CREATED)
-              else:
-                return Response(data=image_decode_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+              if elem != "":
+                image = temp_dict['image'] # 리스트 (리스트 전체가 아니라 개별 string을 넣는 것이 훨씬 빠름!)
+                
+                image_data = {
+                  # 'post' : post_id,
+                  'images' : image[num],
+                  'meal_type' : classifier[i],
+                }
+                
+                # 입력 값이 맞는지 체크 필요!
+                image_decode_serializer = ImageDecodeSerializer(data=image_data, context={'request':request, 'images':image_data.get('images'), 'post':post, 'meal_type':classifier[i], 'date':date_data, 'num' : num})
+                num += 1 # PUT에서 값이 중복되는지 체크 필요 ** (num을 아예 내부적으로 할당해도 될듯?)
+                if image_decode_serializer.is_valid():
+                  image_decode_serializer.save()
+                  # return Response(data=image_decode_serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                  return Response(data=image_decode_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
       # <2> 입력받은 데이터로 '수분(물)' consumption 생성하는 로직** (수분은 '단일 값'만 입력받음)
@@ -200,23 +203,25 @@ class PostDateView(APIView):
       supplement_input = request.data['supplement'] # supplement_data는 '리스트'일 것!
       supplement_count = len(supplement_input)
       for i in range(supplement_count):
-        supplement_image = supplement_input[i]['image']
-        supplement_name = supplement_input[i]['name']
+        # 생성했다가 지워서 POST 했을 때의 예외처리
+        if supplement_input[i] != {}:
+          supplement_image = supplement_input[i]['image']
+          supplement_name = supplement_input[i]['name']
 
-        image_url = create_image_url(supplement_image, post_id, date_data, i) # s3에 객체 생성 후 url 리턴
-        
-        supplement_data = {
-          'post' : post_id,
-          'name' : supplement_name,
-          'manufacturer' : supplement_input[i]['manufacturer'],
-          # 'supplement_amount' : supplement_input[i]['amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
-          'image' : image_url,
-        }
-        supplement_serializer = SupplementSerializer(data=supplement_data)
-        if supplement_serializer.is_valid():
-          supplement_serializer.save()
-        else:
-          return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_serializer.errors)
+          image_url = create_image_url(supplement_image, post_id, date_data, i) # s3에 객체 생성 후 url 리턴 
+          
+          supplement_data = {
+            'post' : post_id,
+            'name' : supplement_name,
+            'manufacturer' : supplement_input[i]['manufacturer'],
+            # 'supplement_amount' : supplement_input[i]['amount'], # 일단 받지 않음.. 추후에 필요하면 추가!
+            'image' : image_url,
+          }
+          supplement_serializer = SupplementSerializer(data=supplement_data)
+          if supplement_serializer.is_valid():
+            supplement_serializer.save()
+          else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=supplement_serializer.errors)
 
       return Response(data=post_serializer, status=status.HTTP_200_OK)
     else:

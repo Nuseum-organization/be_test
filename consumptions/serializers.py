@@ -93,13 +93,15 @@ class ImageDecodeSerializer(serializers.ModelSerializer):
     # header, data = image_string[num].split(';base64,') # 리스트째로 들어옴!
     data_format, ext = header.split('/')
     try:
+      food = FoodImage.objects.create(post=post, image='', meal_type=meal_type) # 이미지 객체 생성하여 DB에 임시 저장(url은 빈 string) *
       image_data = base64.b64decode(data) # 이미지 파일 생성
       s3r = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
       key = "%s"%(f'{year}/{month}/{day}')
-      s3r.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(Key=key+'/%s'%(f'{post.id}_{meal_type}_{num}.{ext}'), Body=image_data, ContentType='jpg')
-      aws_url = f'{settings.IMAGE_URL}/{year}/{month}/{day}/{post.id}_{meal_type}_{num}.{ext}'
-      FoodImage.objects.create(post=post, image=aws_url, meal_type=meal_type) # 이미지 객체 생성하여 DB에 저장
-
+      s3r.Bucket(settings.AWS_STORAGE_BUCKET_NAME).put_object(Key=key+'/%s'%(f'{post.id}_{meal_type}_{food.id}.{ext}'), Body=image_data, ContentType='jpg')
+      aws_url = f'{settings.IMAGE_URL}/{year}/{month}/{day}/{post.id}_{meal_type}_{food.id}.{ext}'
+      # FoodImage.objects.update(post=post, image=aws_url, meal_type=meal_type, partial=True) # 이미지 객체 생성하여 DB에 저장
+      food.image = aws_url # 위에서 생성된 food객체의 image_url 업데이트 *
+      food.save()
     except TypeError:
       self.fail('invalid_image')
       
