@@ -60,7 +60,8 @@ def week_month_calculate(week_data):
   total_energy, total_protein, total_fat, total_carbohydrate, total_dietary_fiber, total_magnesium, total_vitamin_a, total_vitamin_d, total_vitamin_b6,\
   total_folic_acid, total_vitamin_b12, total_tryptophan, total_dha_epa = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
   total_water = 0
-
+  # print(len(week_data))
+  day_count = len(week_data)
   for elem in week_data: # queryset
     # print(elem.consumption_set.all())
     day_food_data = elem.consumption_set.all().values()
@@ -99,6 +100,7 @@ def week_month_calculate(week_data):
     'tryptophan' : total_tryptophan,
     'dha_epa' : total_dha_epa,
     'water_amount' : total_water,
+    'day_count' : day_count,
   }
 
   return sum_week_data
