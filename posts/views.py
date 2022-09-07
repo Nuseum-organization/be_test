@@ -459,7 +459,7 @@ class PostIdView(APIView):
         else: # 추가로 들어온 정보에 대해서는 create 수행
           # 추가했다가 바로 지우는 경우 예외처리(= {}객체가 생성되지만 해당 인덱스에 객체가 존재하지 않는 경우)
           if list_input_supplement[i] != {}:
-            supplement_image = list_input_supplement[i]['image']
+            supplement_image = list_input_supplement[i]['image'] # PUT 이미지 안받는 경우 따로 처리 필요?(보류) **
             supplement_name = list_input_supplement[i]['name']
             image_url = create_image_url(supplement_image, post.id, date_data, supplement_name ,i) # s3에 객체 생성 후 url 리턴(supplement_name추가*)
             supplement_data = {
