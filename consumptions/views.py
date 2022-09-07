@@ -36,12 +36,17 @@ class DayNutrientView(APIView):
       food_consumptions = Consumption.objects.filter(post=post.id)
       # 물 정보
       water_consumption = WaterConsumption.objects.get(post=post.id)
+      # 영양제 정보 (추가)
+      supplement_consumptions = SupplementConsmption.objects.filter(post=post.id) # 만약 연결되지 않은 supplement는 error 발생 가능 -> dummy에 연결 필요
       # Queryset to JSON
       day_food_data = food_consumptions.values() # <class 'django.db.models.query.QuerySet'>
       day_water_data = water_consumption # 가져오는 값은 한개뿐임
+      # 추가
+      day_supplement_data = supplement_consumptions.values()
       # print(day_water_data)
       # calculate logic
-      sum_day_data = day_calculate(day_food_data, day_water_data)
+      # sum_day_data = day_calculate(day_food_data, day_water_data)
+      sum_day_data = day_calculate(day_food_data, day_water_data, day_supplement_data)
       return Response(data=sum_day_data) 
     else:
       data = {

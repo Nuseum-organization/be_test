@@ -1,12 +1,13 @@
 # TODO : nutrient 계산 로직 구현
-from foods.models import Food
+from foods.models import Food, Supplement
 import base64
 import boto3
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
 
-def day_calculate(day_food_data, day_water_data):
+# def day_calculate(day_food_data, day_water_data):
+def day_calculate(day_food_data, day_water_data, day_supplement_data):
   
   # print(data) # 쿼리셋
 
@@ -32,8 +33,24 @@ def day_calculate(day_food_data, day_water_data):
     tryptophan += food.tryptophan * (elem['amount'] / 100)
     dha_epa += food.dha_epa * (elem['amount'] / 100)
 
-  # for elem in day_water_data:
-  #   water_amount += elem['amount']
+  for elem in day_supplement_data:
+    # print(elem)
+    supplement = Supplement.objects.get(id=elem['supplement_id'])
+    # print(food, elem['amount'])
+    energy += supplement.energy
+    protein += supplement.protein
+    fat += supplement.fat
+    carbohydrate += supplement.carbohydrate
+    dietary_fiber += supplement.dietary_fiber
+    magnesium += supplement.magnesium
+    vitamin_a += supplement.vitamin_a
+    vitamin_d += supplement.vitamin_d
+    vitamin_b6 += supplement.vitamin_b6
+    folic_acid += supplement.folic_acid
+    vitamin_b12 += supplement.vitamin_b12
+    tryptophan += supplement.tryptophan
+    dha_epa += supplement.dha_epa
+  
   
   sum_day_data = {
     'energy' : energy,
@@ -66,9 +83,11 @@ def week_month_calculate(week_data):
     # print(elem.consumption_set.all())
     day_food_data = elem.consumption_set.all().values()
     day_water_data = elem.waterconsumption_set.all().get()
+    day_supplement_data = elem.supplementconsmption_set.all().values() # 추가 (이름 정정)
     # print(day_water_data)
     # print(day_data.values())
-    sum_day_data = day_calculate(day_food_data, day_water_data)
+    # sum_day_data = day_calculate(day_food_data, day_water_data)
+    sum_day_data = day_calculate(day_food_data, day_water_data, day_supplement_data)
 
     total_energy += sum_day_data['energy']
     total_protein += sum_day_data['protein']

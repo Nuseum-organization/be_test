@@ -27,10 +27,10 @@ class WaterConsumption(models.Model):
   def __str__(self):
     return f'[post_no.{self.post.id}] {self.amount}'
 
-class SupplementConsmption(models.Model):
+class SupplementConsmption(models.Model): # 이름 변경!
   post = models.ForeignKey(Post, on_delete=models.CASCADE)
   # supplement = models.IntegerField(default=0) # FK 안쓰는 경우
-  supplement = models.ForeignKey(Supplement, on_delete=models.SET_NULL, blank=True, null=True) # 나중에 DB에 인스턴스 생성 후 연결
+  supplement = models.ForeignKey(Supplement, on_delete=models.SET_NULL, blank=True, null=True, default=1) # 나중에 DB에 인스턴스 생성 후 연결
   name = models.CharField(max_length=100)
   manufacturer = models.CharField(max_length=100)
   amount = models.IntegerField(default=0) # 임시 필드
