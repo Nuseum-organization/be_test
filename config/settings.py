@@ -71,6 +71,7 @@ PROJECT_APPS = [
     "posts.apps.PostsConfig",
     "consumptions.apps.ConsumptionsConfig",
     "receipts.apps.ReceiptsConfig",
+    "qnas.apps.QnasConfig",
 ]
 
 THIRD_PARTY_APPS = [

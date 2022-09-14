@@ -10,6 +10,7 @@ class User(AbstractUser):
   def __str__(self):
     return self.username
 
+# 현재 사용자의 세션을 저장하는 모델 객체 생성 (중복 로그인 처리 로직)
 # class UserSession(models.Model):
 #   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, editable=False)
 #   session_key = models.CharField(max_length=40, editable=False)
@@ -22,15 +23,20 @@ class User(AbstractUser):
 #   for user_session in UserSession.objects.filter(user=user):
 #     session_key = user_session.session_key
 #     session = SessionStore(session_key)
-#     session.delete()
+#     # session.delete()
+#     session['kicked'] = True
+#     session.save()
+#     user_session.delete()
 
-# method1
-#   session_key = request.session.session_key
-#   UserSession.objects.create(user=user, session_key=session_key)
+#   # method1
+#   # session_key = request.session.session_key
+#   # UserSession.objects.create(user=user, session_key=session_key)
 
-# method2 -> Not Null 에러 처리
+#   # method2 -> Not Null 에러 처리
 #   if not request.session.session_key:
 #     request.session.create()
 #   session_key = request.session.session_key
+
+#   UserSession.objects.create(user=user, session_key=session_key)
 
 # user_logged_in.connect(kicked_my_other_sessions, dispatch_uid='user_logged_in')
