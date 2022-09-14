@@ -13,7 +13,12 @@ def day_calculate(day_food_data, day_water_data, day_supplement_data):
 
   energy, protein, fat, carbohydrate, dietary_fiber, magnesium, vitamin_a, vitamin_d, vitamin_b6,\
   folic_acid, vitamin_b12, tryptophan, dha_epa = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-  # water_amount = 0
+  # method1 : dict
+  # category_mapper = {'채소':1, '과일':2, '콩/두부':3, '통곡물':4, '버섯':5, '해조류':6, '견과':7, '고기/생선/달걀':8, '유제품':9}
+
+  # method2 : list
+  category_mapper = ['채소', '과일', '콩/두부', '통곡물', '버섯', '해조류', '견과', '고기/생선/달걀', '유제품']
+  category_result = set([])
 
   for elem in day_food_data:
 
@@ -32,6 +37,11 @@ def day_calculate(day_food_data, day_water_data, day_supplement_data):
     vitamin_b12 += food.vitamin_b12 * (elem['amount'] / 100)
     tryptophan += food.tryptophan * (elem['amount'] / 100)
     dha_epa += food.dha_epa * (elem['amount'] / 100)
+    # print(food.category)
+    for i in range(9):
+      if category_mapper[i] in food.category:
+        category_result.add(i+1)
+    # print(category_result)
 
   for elem in day_supplement_data:
     # print(elem)
@@ -67,6 +77,7 @@ def day_calculate(day_food_data, day_water_data, day_supplement_data):
     'tryptophan' : tryptophan,
     'dha_epa' : dha_epa,
     'water_amount' : day_water_data.amount,
+    'category' : category_result, # 추가
   }
 
   return sum_day_data
@@ -77,16 +88,16 @@ def week_month_calculate(week_data):
   total_energy, total_protein, total_fat, total_carbohydrate, total_dietary_fiber, total_magnesium, total_vitamin_a, total_vitamin_d, total_vitamin_b6,\
   total_folic_acid, total_vitamin_b12, total_tryptophan, total_dha_epa = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
   total_water = 0
-  # print(len(week_data))
+  total_category = set([])
+
+  # 일주일/한달동안 며칠 기록했는지 체크
   day_count = len(week_data)
   for elem in week_data: # queryset
     # print(elem.consumption_set.all())
     day_food_data = elem.consumption_set.all().values()
     day_water_data = elem.waterconsumption_set.all().get()
     day_supplement_data = elem.supplementconsmption_set.all().values() # 추가 (이름 정정)
-    # print(day_water_data)
-    # print(day_data.values())
-    # sum_day_data = day_calculate(day_food_data, day_water_data)
+
     sum_day_data = day_calculate(day_food_data, day_water_data, day_supplement_data)
 
     total_energy += sum_day_data['energy']
@@ -103,6 +114,8 @@ def week_month_calculate(week_data):
     total_tryptophan += sum_day_data['tryptophan']
     total_dha_epa += sum_day_data['dha_epa']
     total_water += sum_day_data['water_amount']
+    # category 추가
+    total_category |= sum_day_data['category']
 
   sum_week_data = {
     'energy' : total_energy,
@@ -120,6 +133,8 @@ def week_month_calculate(week_data):
     'dha_epa' : total_dha_epa,
     'water_amount' : total_water,
     'day_count' : day_count,
+    # 카테고리 추가
+    'category' : total_category,
   }
 
   return sum_week_data
