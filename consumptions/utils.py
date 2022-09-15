@@ -14,10 +14,10 @@ def day_calculate(day_food_data, day_water_data, day_supplement_data):
   energy, protein, fat, carbohydrate, dietary_fiber, magnesium, vitamin_a, vitamin_d, vitamin_b6,\
   folic_acid, vitamin_b12, tryptophan, dha_epa = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
   # method1 : dict
-  # category_mapper = {'채소':1, '과일':2, '콩/두부':3, '통곡물':4, '버섯':5, '해조류':6, '견과':7, '고기/생선/달걀':8, '유제품':9}
+  category_mapper = {'채소':1, '샐러드':1, '나물':1, '과일':2, '과실류':2, '콩/두부':3, '두류':3, '통곡물':4, '버섯':5, '해조류':6, '견과':7, '고기/생선/달걀':8, '육류':8, '난류':8, '수산물':8, '어패류':8, '회류':8, '유제품':9, '발효유':9, '가공유':9, '가공두유':9 }
 
   # method2 : list
-  category_mapper = ['채소', '과일', '콩/두부', '통곡물', '버섯', '해조류', '견과', '고기/생선/달걀', '유제품']
+  # category_mapper = ['채소', '과일', '콩/두부', '통곡물', '버섯', '해조류', '견과', '고기/생선/달걀', '유제품']
   category_result = set([])
 
   for elem in day_food_data:
@@ -37,11 +37,14 @@ def day_calculate(day_food_data, day_water_data, day_supplement_data):
     vitamin_b12 += food.vitamin_b12 * (elem['amount'] / 100)
     tryptophan += food.tryptophan * (elem['amount'] / 100)
     dha_epa += food.dha_epa * (elem['amount'] / 100)
-    # print(food.category)
-    for i in range(9):
-      if category_mapper[i] in food.category:
-        category_result.add(i+1)
-    # print(category_result)
+    # method1 : dict
+    for index, (key, val) in enumerate(category_mapper.items()):
+      if key in food.category:
+        category_result.add(val)
+    # # method2: list
+    # for i in range(9):
+    #   if category_mapper[i] in food.category:
+    #     category_result.add(i+1)
 
   for elem in day_supplement_data:
     # print(elem)
