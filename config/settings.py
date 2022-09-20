@@ -118,8 +118,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME' : timedelta(days=7),
     'ROTATE_REFRESH_TOKENS' : False, # token 재발급 관련 설정
     'BLACKLIST_AFTER_ROTATION' : True, # Blacklist 관련 설정
-    # 'JWT_AUTH_SAMESITE' : None,
 }
+
+# 쿠키 TEST
+'JWT_AUTH_SAMESITE' : None
 
 # ALLAUTH
 SITE_ID = 1
@@ -143,8 +145,6 @@ CORS_ORIGIN_WHITELIST = [
                         'http://127.0.0.1:3000',
                         'http://localhost:3000']
 CORS_ALLOW_CREDENTIALS = True
-# 쿠키 TEST
-# SESSION_COOKIE_DOMAIN = '.nuseum-rho.vercel.app'
 
 ROOT_URLCONF = "config.urls"
 
