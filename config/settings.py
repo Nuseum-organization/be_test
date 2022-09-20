@@ -118,7 +118,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME' : timedelta(days=7),
     'ROTATE_REFRESH_TOKENS' : False, # token 재발급 관련 설정
     'BLACKLIST_AFTER_ROTATION' : True, # Blacklist 관련 설정
-    'JWT_AUTH_SAMESITE' : None,
+    # 'JWT_AUTH_SAMESITE' : None,
 }
 
 # ALLAUTH
