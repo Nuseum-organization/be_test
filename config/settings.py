@@ -143,7 +143,7 @@ CORS_ORIGIN_WHITELIST = [
                         'http://localhost:3000']
 CORS_ALLOW_CREDENTIALS = True
 # 쿠키 TEST
-SESSION_COOKIE_DOMAIN = '.localhost'
+SESSION_COOKIE_DOMAIN = '.nuseum-rho.vercel.app'
 
 ROOT_URLCONF = "config.urls"
 
