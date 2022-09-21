@@ -49,6 +49,8 @@ SECRET_KEY = config('SECRET_KEY')
 ALLOWED_HOSTS = [
     'cryptic-castle-40575.herokuapp.com',
     '127.0.0.1',
+    'localhost',
+    'nuseum-rho.vercel.app',
     ]
 
 
@@ -121,7 +123,7 @@ SIMPLE_JWT = {
 }
 
 # 쿠키 TEST
-JWT_AUTH_SAMESITE = 'None'
+# JWT_AUTH_SAMESITE = 'None'
 JWT_AUTH_SECURE = True
 
 # ALLAUTH
