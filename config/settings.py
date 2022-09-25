@@ -96,7 +96,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated', # 기본으로 인증된 유저만 API에 접근가능
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication', # 왜 주석처리 안되어있지?
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ],
 }
@@ -125,6 +125,10 @@ SIMPLE_JWT = {
 # 쿠키 TEST
 # JWT_AUTH_SAMESITE = 'None'
 JWT_AUTH_SECURE = True
+
+# 테스트
+SESSION_COOKIE_DOMAIN=".vercel.app"
+
 
 # ALLAUTH
 SITE_ID = 1
