@@ -126,13 +126,13 @@ SIMPLE_JWT = {
 # JWT_AUTH_SAMESITE = 'None'
 JWT_AUTH_SECURE = True
 
-# 테스트
-SESSION_COOKIE_DOMAIN="nuseum-rho.vercel.app"
+# ================ 임시 테스트1 =====================================
+SESSION_COOKIE_DOMAIN=".vercel.app"
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
-
+# ==================================================================
 
 # ALLAUTH
 SITE_ID = 1
@@ -156,6 +156,15 @@ CORS_ORIGIN_WHITELIST = [
                         'http://127.0.0.1:3000',
                         'http://localhost:3000']
 CORS_ALLOW_CREDENTIALS = True
+
+# ================== 임시 테스트2 ========================================
+CORS_ALLOWED_ORIGINS = [
+    'https://nuseum-rho.vercel.app',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://nuseum-rho.vercel.app',
+]
+# =========================================================================
 
 ROOT_URLCONF = "config.urls"
 
