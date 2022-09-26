@@ -123,7 +123,7 @@ SIMPLE_JWT = {
 }
 
 # 쿠키 TEST
-# JWT_AUTH_SAMESITE = 'None'
+JWT_AUTH_SAMESITE = 'None'
 JWT_AUTH_SECURE = True
 
 # ================ 임시 테스트1 =====================================
