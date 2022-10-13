@@ -68,48 +68,4 @@ class CustomLoginView(LoginView):
             set_jwt_cookies(response, self.access_token, self.refresh_token)
             # custom_set_jwt_cookies(response, self.access_token, self.refresh_token)
         return response
-
-# def custom_set_jwt_cookies(response, access_token, refresh_token):
-#     custom_set_jwt_access_cookie(response, access_token)
-#     custom_set_jwt_refresh_cookie(response, refresh_token)
-
-# def custom_set_jwt_access_cookie(response, access_token):
-#     from config.settings import SIMPLE_JWT as jwt_settings
-#     cookie_name = getattr(settings, 'JWT_AUTH_COOKIE', None)
-#     access_token_expiration = (timezone.now() + jwt_settings.ACCESS_TOKEN_LIFETIME)
-#     cookie_secure = getattr(settings, 'JWT_AUTH_SECURE', False)
-#     cookie_httponly = getattr(settings, 'JWT_AUTH_HTTPONLY', True)
-#     # cookie_samesite = getattr(settings, 'JWT_AUTH_SAMESITE', 'Lax')
-#     cookie_samesite = getattr(settings, 'JWT_AUTH_SAMESITE', None)
-
-#     if cookie_name:
-#         response.set_cookie(
-#             cookie_name,
-#             access_token,
-#             expires=access_token_expiration,
-#             secure=cookie_secure,
-#             httponly=cookie_httponly,
-#             samesite=cookie_samesite,
-#         )
-
-
-# def custom_set_jwt_refresh_cookie(response, refresh_token):
-#     from config.settings import SIMPLE_JWT as jwt_settings
-#     refresh_token_expiration = (timezone.now() + jwt_settings.REFRESH_TOKEN_LIFETIME)
-#     refresh_cookie_name = getattr(settings, 'JWT_AUTH_REFRESH_COOKIE', None)
-#     refresh_cookie_path = getattr(settings, 'JWT_AUTH_REFRESH_COOKIE_PATH', '/')
-#     cookie_secure = getattr(settings, 'JWT_AUTH_SECURE', False)
-#     cookie_httponly = getattr(settings, 'JWT_AUTH_HTTPONLY', True)
-#     # cookie_samesite = getattr(settings, 'JWT_AUTH_SAMESITE', 'Lax')
-#     cookie_samesite = getattr(settings, 'JWT_AUTH_SAMESITE', None)
-
-#     if refresh_cookie_name:
-#         response.set_cookie(
-#             refresh_cookie_name,
-#             refresh_token,
-#             expires=refresh_token_expiration,
-#             secure=cookie_secure,
-#             httponly=cookie_httponly,
-#             samesite=cookie_samesite,
-#             path=refresh_cookie_path,
-#         )
+        

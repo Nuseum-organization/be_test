@@ -116,22 +116,24 @@ JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME' : timedelta(hours=2),
+    # 'ACCESS_TOKEN_LIFETIME' : timedelta(hours=2),
+    'ACCESS_TOKEN_LIFETIME' : timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME' : timedelta(days=7),
     'ROTATE_REFRESH_TOKENS' : False, # token 재발급 관련 설정
     'BLACKLIST_AFTER_ROTATION' : True, # Blacklist 관련 설정
+    "TOKEN_REFRESH_SERIALIZER": "accounts.serializers.CustomTokenRefreshSerializer", # custom token refresh
 }
 
 # 쿠키 TEST
-JWT_AUTH_SAMESITE = 'None'
-JWT_AUTH_SECURE = True
+# JWT_AUTH_SAMESITE = 'None'
+# JWT_AUTH_SECURE = True
 
 # ================ 임시 테스트1 =====================================
-SESSION_COOKIE_DOMAIN=".vercel.app"
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_DOMAIN=".vercel.app" # 왠지 얘때문에 local에서 admin 페이지가 안들어가지는것같음
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_SAMESITE = 'None'
 # ==================================================================
 
 # ALLAUTH
@@ -158,12 +160,12 @@ CORS_ORIGIN_WHITELIST = [
 CORS_ALLOW_CREDENTIALS = True
 
 # ================== 임시 테스트2 ========================================
-CORS_ALLOWED_ORIGINS = [
-    'https://nuseum-rho.vercel.app',
-]
-CSRF_TRUSTED_ORIGINS = [
-    'https://nuseum-rho.vercel.app',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'https://nuseum-rho.vercel.app',
+# ]
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://nuseum-rho.vercel.app',
+# ]
 # =========================================================================
 
 ROOT_URLCONF = "config.urls"
@@ -262,3 +264,64 @@ AWS_REGION = 'ap-northeast-2'
 
 IMAGE_URL = "https://s3.%s.amazonaws.com/%s" % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
 
+# ======================= LOGGING TEST ==================================================
+# from os.path import join
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'fileFormat': {
+#             'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+#             'datefmt': '%d/%b/%Y %H:%M:%S'
+#         },
+#         'consoleFormat' : {
+#             'format': '%(levelname)s %(message)s'
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'consoleFormat',
+#         },
+#         'debug_log': {
+#             'level': 'DEBUG',
+#             'encoding': 'utf-8',
+#             # 'class': 'logging.FileHandler',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': join(BASE_DIR, 'logs/logfile.log'),
+#             'maxBytes': 1024*1024*5,
+#             'backupCount': 5,
+#             'formatter': 'fileFormat'
+#         },
+#         'error_log': {
+#             'level': 'ERROR',
+#             'encoding': 'utf-8',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': join(BASE_DIR, 'logs/logfile.log'),
+#             'maxBytes': 1024*1024*5,
+#             'backupCount': 5,
+#             'formatter': 'fileFormat',
+#         },
+
+#     },
+#     'loggers': {
+#         'qnas': {
+#             # 'handlers': ['debug_log', 'console'], # aws
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#         },
+#         'django.db.backends': {
+#             # 'handlers': ['debug_log', 'console'], # aws
+#             'handlers': ['console', 'error_log'],
+#             # 'level': 'DEBUG', # SQL문까지 확인 가능
+#             'level': 'INFO',
+#         },
+#         'django.request': {
+#             'handlers': ['error_log'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#     }
+# }

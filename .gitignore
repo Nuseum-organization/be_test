@@ -257,3 +257,6 @@ cython_debug/
 .venv
 secrets.json
 db.sqlite3
+
+# LOGGING TEST TEMP(DEV)
+logs

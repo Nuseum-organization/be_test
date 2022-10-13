@@ -28,10 +28,9 @@ class QuestionAPIView(APIView):
     if not request.user.is_authenticated:
       return Response(status=status.HTTP_401_UNAUTHORIZED)
     serializer = QuestionCreateSerializer(data=request.data)
-    # print(dir(serializer))
     if serializer.is_valid():
       question = serializer.save(author=request.user)
-      question_serializer = QuestionCreateSerializer(question).data
+      question_serializer = QuestionCreateSerializer(question).data # ReturnDict
       return Response(data=question_serializer, status=status.HTTP_200_OK)
     else:
       return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
